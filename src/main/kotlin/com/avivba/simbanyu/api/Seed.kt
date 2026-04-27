@@ -24,6 +24,28 @@ class Seed(
                     photoImageURL = "https://example.com/photo.jpg"
                 )
             )
+
+            userRepository.save(
+                User(
+                    username = "operator",
+                    password = encoder.encode("operator")!!,
+                    name = "Operator",
+                    role = UserRole.OPERATOR,
+                    phoneNumber = "08111111111",
+                    photoImageURL = "https://example.com/photo.jpg"
+                )
+            )
+
+            userRepository.save(
+                User(
+                    username = "user",
+                    password = encoder.encode("user")!!,
+                    name = "User",
+                    role = UserRole.SUBSCRIBER,
+                    phoneNumber = "0822222222",
+                    photoImageURL = "https://example.com/photo.jpg"
+                )
+            )
         }
     }
 }
