@@ -17,5 +17,7 @@ class AuthController(
     ) = authService.authenticate(body)
 
     @PostMapping("/refresh")
-    fun refresh() = "Refreh token"
+    fun refresh(
+        @RequestBody body: RefreshTokenRequest
+    ) = authService.refreshAccessToken(body.token)
 }
