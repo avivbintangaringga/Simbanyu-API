@@ -14,7 +14,6 @@ typealias AppUser = com.avivba.simbanyu.api.database.entity.User
 class CustomUserDetailsService(
     private val userRepository: UserRepository,
     private val subscriberRepository: SubscriberRepository,
-    private val tokenService: TokenService
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
         var user = userRepository.findUserByUsernameOrPhoneNumber(username, username)
