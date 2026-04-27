@@ -8,6 +8,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import java.util.UUID
 
 
 @Entity
@@ -16,7 +17,7 @@ class BillItem(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", unique = true, nullable = false)
-    var id: String? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var name: String = "",

@@ -22,7 +22,7 @@ class Subscriber(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", unique = true, nullable = false)
-    var id: String? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false, unique = true)
     var meterId: String = "",

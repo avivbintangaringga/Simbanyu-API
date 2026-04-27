@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import java.util.Collections.emptyList
+import java.util.UUID
 
 @Entity
 @Table(name = "bills")
@@ -18,7 +19,7 @@ class Bill(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", unique = true, nullable = false)
-    var id: String? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var amount: Double = 0.0,
