@@ -24,7 +24,7 @@ class Subscriber(
     @Column(columnDefinition = "uuid", unique = true, nullable = false)
     var id: String? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var meterId: String = "",
 
     @Column(nullable = false)
