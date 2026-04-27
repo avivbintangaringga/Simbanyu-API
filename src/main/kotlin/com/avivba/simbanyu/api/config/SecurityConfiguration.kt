@@ -23,7 +23,7 @@ class SecurityConfiguration(
         .authorizeHttpRequests {
             it
                 .requestMatchers(
-                    "/api/auth",
+                    "/api/auth/login",
                     "/api/auth/refresh",
                     "/error"
                 ).permitAll()
