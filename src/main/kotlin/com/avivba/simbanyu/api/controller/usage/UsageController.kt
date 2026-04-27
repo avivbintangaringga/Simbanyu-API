@@ -1,9 +1,9 @@
-package com.avivba.simbanyu.api.controller
+package com.avivba.simbanyu.api.controller.usage
 
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/subscribers")
-class SubscriberController {
+@RequestMapping("/api/usages")
+class UsageController {
 }

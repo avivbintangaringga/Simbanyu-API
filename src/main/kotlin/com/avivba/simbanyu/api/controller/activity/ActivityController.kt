@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.controller
+package com.avivba.simbanyu.api.controller.activity
 
 import com.avivba.simbanyu.api.database.entity.Activity
 import com.avivba.simbanyu.api.database.repository.ActivityRepository
