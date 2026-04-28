@@ -20,18 +20,21 @@ class AnnouncementController(
     @GetMapping
     fun getAllAnnouncements(): ApiResponse<List<Announcement>> {
         return announcementService.getAllAnnouncements()
+            .let { ApiResponse.success(it) }
     }
 
     @GetMapping("/{id}")
     fun getAnnouncementById(
         @PathVariable id: String
     ) = announcementService.getAnnouncementById(id)
+        .let { ApiResponse.success(it) }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PostMapping
     fun addAnnouncement(
         @Valid @RequestBody body: AnnouncementRequest
     ) = announcementService.addAnnouncement(body)
+        .let { ApiResponse.success(it) }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PutMapping("/{id}")
@@ -43,9 +46,11 @@ class AnnouncementController(
             id,
             body
         )
+        .let { ApiResponse.success(it) }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @DeleteMapping("/{id}")
     fun deleteAnnouncement(@PathVariable id: String) =
         announcementService.deleteAnnouncementById(id)
+            .let { ApiResponse.success(it) }
 }

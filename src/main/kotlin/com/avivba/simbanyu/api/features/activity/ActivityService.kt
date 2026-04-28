@@ -15,17 +15,11 @@ class ActivityService(
     private val activityRepository: ActivityRepository,
     private val userRepository: UserRepository
 ) {
-    fun getAllActivities(user: UserDetails): ApiResponse<List<Activity>> {
-        val user = userRepository.findByUsername(user.username)
-
+    fun getAllActivities(user: User): List<Activity> {
         return if (user.role == UserRole.ADMIN) {
-            ApiResponse.success(
-                activityRepository.findAll()
-            )
+            activityRepository.findAll()
         } else {
-            ApiResponse.success(
-                activityRepository.findActivitiesByUserId(user.id!!)
-            )
+            activityRepository.findActivitiesByUserId(user.id!!)
         }
     }
 

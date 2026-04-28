@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.activity
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -11,15 +12,20 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/activities")
 class ActivityController(
-    val activityService: ActivityService
+    val activityService: ActivityService,
+    val userRepository: UserRepository
 ) {
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @GetMapping
     fun getAllActivities(
-        @AuthenticationPrincipal user: UserDetails
+        @AuthenticationPrincipal userDetails: UserDetails
     ): ApiResponse<List<Activity>> {
+        val user = userRepository.findByUsername(userDetails.username)
+
         return activityService.getAllActivities(
             user
-        )
+        ).let {
+            ApiResponse.success(it)
+        }
     }
 }
