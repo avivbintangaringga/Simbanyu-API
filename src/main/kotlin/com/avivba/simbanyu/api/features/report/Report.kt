@@ -48,10 +48,3 @@ class Report(
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now(),
 )
-
-enum class ReportStatus {
-    WAITING,
-    IN_PROGRESS,
-    COMPLETED,
-    REJECTED
-}

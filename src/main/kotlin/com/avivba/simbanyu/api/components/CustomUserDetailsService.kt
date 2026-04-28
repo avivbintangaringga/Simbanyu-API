@@ -1,6 +1,7 @@
-package com.avivba.simbanyu.api.features.user
+package com.avivba.simbanyu.api.components
 
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
+import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

@@ -2,7 +2,7 @@ package com.avivba.simbanyu.api.config
 
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.user.UserRepository
-import com.avivba.simbanyu.api.features.user.CustomUserDetailsService
+import com.avivba.simbanyu.api.components.CustomUserDetailsService
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

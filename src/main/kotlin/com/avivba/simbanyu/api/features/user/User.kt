@@ -52,9 +52,4 @@ class User(
     var updatedAt: Instant = Instant.now(),
 )
 
-enum class UserRole {
-    ADMIN,
-    OPERATOR,
-    SUBSCRIBER
-}
 

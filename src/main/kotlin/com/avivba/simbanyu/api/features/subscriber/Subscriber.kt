@@ -62,9 +62,3 @@ class Subscriber(
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now(),
 )
-
-enum class SubscriberType {
-    SOCIAL,
-    RESIDENTIAL,
-    COMMERCIAL
-}
