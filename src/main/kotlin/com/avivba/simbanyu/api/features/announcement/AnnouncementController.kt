@@ -1,5 +1,7 @@
 package com.avivba.simbanyu.api.features.announcement
 
+import com.avivba.simbanyu.api.base.ApiResponse
+import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,25 +18,26 @@ class AnnouncementController(
     private val announcementService: AnnouncementService
 ) {
     @GetMapping
-    fun getAllAnnouncements() =
-        announcementService.getAllAnnouncements()
+    fun getAllAnnouncements(): ApiResponse<List<Announcement>> {
+        return announcementService.getAllAnnouncements()
+    }
 
     @GetMapping("/{id}")
-    fun getAnnouncementById(@PathVariable id: String): Announcement =
-        announcementService.getAnnouncementById(id)
+    fun getAnnouncementById(
+        @PathVariable id: String
+    ) = announcementService.getAnnouncementById(id)
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PostMapping
     fun addAnnouncement(
-        @RequestBody body: AnnouncementRequest
-    ) =
-        announcementService.addAnnouncement(body)
+        @Valid @RequestBody body: AnnouncementRequest
+    ) = announcementService.addAnnouncement(body)
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PutMapping("/{id}")
     fun updateAnnouncement(
         @PathVariable id: String,
-        @RequestBody body: AnnouncementRequest
+        @Valid @RequestBody body: AnnouncementRequest
     ) = announcementService
         .updateAnnouncement(
             id,
