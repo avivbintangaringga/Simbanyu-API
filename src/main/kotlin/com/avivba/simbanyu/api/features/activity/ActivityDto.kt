@@ -6,4 +6,14 @@ data class ActivityDto(
     val body: String,
     val createdAt: String,
     val updatedAt: String,
-)
+) {
+    companion object {
+        fun fromEntity(activity: Activity) = ActivityDto(
+            id = activity.id.toString(),
+            title = activity.title,
+            body = activity.body,
+            createdAt = activity.createdAt.toString(),
+            updatedAt = activity.updatedAt.toString(),
+        )
+    }
+}

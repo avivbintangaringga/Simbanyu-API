@@ -17,9 +17,15 @@ class NotificationController(
     @GetMapping
     fun getUserNotifications(
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<List<Notification>> {
+    ): ApiResponse<List<NotificationDto>> {
         val user = userRepository.findByUsername(userDetails.username)
         return notificationService.getUserNotifications(user)
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(
+                    it.map { notification ->
+                        NotificationDto.fromEntity(notification)
+                    }
+                )
+            }
     }
 }

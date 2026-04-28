@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.auth
 
-data class AuthResponse(
+data class LoginResponseDto(
     val accessToken: String,
     val refreshToken: String
 )

@@ -13,7 +13,7 @@ class AuthController(
 ) {
     @PostMapping("/login")
     fun login(
-        @Valid @RequestBody body: AuthRequest
+        @Valid @RequestBody body: LoginRequest
     ) = authService.authenticate(body)
 
     @PostMapping("/refresh")

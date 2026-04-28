@@ -1,6 +1,5 @@
 package com.avivba.simbanyu.api.features.announcement
 
-import com.avivba.simbanyu.api.base.ApiResponse
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -20,7 +19,7 @@ class AnnouncementService(
                 UUID.fromString(id)
             ).orElseThrow()
 
-    fun addAnnouncement(data: AnnouncementRequest): Announcement {
+    fun addAnnouncement(data: AddAnnouncementRequest): Announcement {
         val announcement = announcementRepository
             .save(
                 Announcement(
@@ -37,7 +36,7 @@ class AnnouncementService(
         return announcement
     }
 
-    fun updateAnnouncement(id: String, data: AnnouncementRequest): Announcement {
+    fun updateAnnouncement(id: String, data: AddAnnouncementRequest): Announcement {
         val announcement = announcementRepository
             .findById(
                 UUID.fromString(id)

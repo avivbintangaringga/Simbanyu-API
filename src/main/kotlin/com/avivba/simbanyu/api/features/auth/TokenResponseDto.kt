@@ -1,5 +1,5 @@
 package com.avivba.simbanyu.api.features.auth
 
-data class TokenResponse(
+data class TokenResponseDto(
     val token: String
 )

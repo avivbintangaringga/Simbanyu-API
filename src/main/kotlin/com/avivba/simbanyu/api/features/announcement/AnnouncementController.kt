@@ -18,39 +18,58 @@ class AnnouncementController(
     private val announcementService: AnnouncementService
 ) {
     @GetMapping
-    fun getAllAnnouncements(): ApiResponse<List<Announcement>> {
+    fun getAllAnnouncements(): ApiResponse<List<AnnouncementDto>> {
         return announcementService.getAllAnnouncements()
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(it.map { announcement ->
+                    AnnouncementDto.fromEntity(announcement)
+                })
+            }
     }
 
     @GetMapping("/{id}")
     fun getAnnouncementById(
         @PathVariable id: String
-    ) = announcementService.getAnnouncementById(id)
-        .let { ApiResponse.success(it) }
+    ): ApiResponse<AnnouncementDto> =
+        announcementService.getAnnouncementById(id)
+            .let {
+                ApiResponse.success(
+                    AnnouncementDto.fromEntity(it)
+                )
+            }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PostMapping
     fun addAnnouncement(
-        @Valid @RequestBody body: AnnouncementRequest
-    ) = announcementService.addAnnouncement(body)
-        .let { ApiResponse.success(it) }
+        @Valid @RequestBody body: AddAnnouncementRequest
+    ): ApiResponse<AnnouncementDto> =
+        announcementService.addAnnouncement(body)
+            .let {
+                ApiResponse.success(
+                    AnnouncementDto.fromEntity(it)
+                )
+            }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PutMapping("/{id}")
     fun updateAnnouncement(
         @PathVariable id: String,
-        @Valid @RequestBody body: AnnouncementRequest
-    ) = announcementService
-        .updateAnnouncement(
-            id,
-            body
-        )
-        .let { ApiResponse.success(it) }
+        @Valid @RequestBody body: AddAnnouncementRequest
+    ): ApiResponse<AnnouncementDto> =
+        announcementService
+            .updateAnnouncement(
+                id,
+                body
+            )
+            .let {
+                ApiResponse.success(
+                    AnnouncementDto.fromEntity(it)
+                )
+            }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @DeleteMapping("/{id}")
-    fun deleteAnnouncement(@PathVariable id: String) =
+    fun deleteAnnouncement(@PathVariable id: String): ApiResponse<Unit> =
         announcementService.deleteAnnouncementById(id)
             .let { ApiResponse.success(it) }
 }

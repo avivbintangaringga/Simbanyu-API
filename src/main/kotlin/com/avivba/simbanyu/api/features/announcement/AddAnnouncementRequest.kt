@@ -2,7 +2,7 @@ package com.avivba.simbanyu.api.features.announcement
 
 import jakarta.validation.constraints.NotEmpty
 
-data class AnnouncementRequest(
+data class AddAnnouncementRequest(
     @NotEmpty
     val title: String,
 

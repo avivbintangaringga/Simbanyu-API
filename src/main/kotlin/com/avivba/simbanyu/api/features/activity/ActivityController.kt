@@ -19,13 +19,17 @@ class ActivityController(
     @GetMapping
     fun getAllActivities(
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<List<Activity>> {
+    ): ApiResponse<List<ActivityDto>> {
         val user = userRepository.findByUsername(userDetails.username)
 
         return activityService.getAllActivities(
             user
         ).let {
-            ApiResponse.success(it)
+            ApiResponse.success(
+                it.map { activity ->
+                    ActivityDto.fromEntity(activity)
+                }
+            )
         }
     }
 }

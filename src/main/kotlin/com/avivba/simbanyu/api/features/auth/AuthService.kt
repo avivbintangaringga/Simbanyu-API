@@ -22,7 +22,7 @@ class AuthService(
     private val userRepository: UserRepository
 ) {
     @Transactional
-    fun authenticate(body: AuthRequest): AuthResponse {
+    fun authenticate(body: LoginRequest): LoginResponseDto {
         val token = UsernamePasswordAuthenticationToken(body.username, body.password)
         authManager.authenticate(token)
 
@@ -43,19 +43,19 @@ class AuthService(
             )
         )
 
-        return AuthResponse(
+        return LoginResponseDto(
             accessToken = accessToken,
             refreshToken = refreshToken
         )
     }
 
-    fun refreshAccessToken(token: String): TokenResponse {
+    fun refreshAccessToken(token: String): TokenResponseDto {
         val username = tokenService.extractUsername(token) ?: throw IllegalArgumentException("Invalid token")
         val userDetails = userDetailsService.loadUserByUsername(username)
         val refreshTokenUser = refreshTokenRepository.findFirstByToken(token)
 
         if (!tokenService.isExpired(token) && refreshTokenUser?.user?.username == username) {
-            return TokenResponse(
+            return TokenResponseDto(
                 token = generateAccessToken(userDetails),
             )
         } else {
