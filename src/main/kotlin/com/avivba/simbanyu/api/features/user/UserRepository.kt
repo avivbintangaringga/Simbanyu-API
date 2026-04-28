@@ -1,8 +1,9 @@
 package com.avivba.simbanyu.api.features.user
 
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
-interface UserRepository : JpaRepository<User, String> {
+interface UserRepository : JpaRepository<User, UUID> {
     fun findUserByUsernameOrPhoneNumber(username: String, phoneNumber: String): User?
     fun findByUsername(username: String): User
 }

@@ -35,8 +35,7 @@ class User(
     @Column(nullable = false, unique = true)
     var phoneNumber: String = "",
 
-    @Column(nullable = false)
-    var photoImageURL: String = "",
+    var photoImageURL: String? = null,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
