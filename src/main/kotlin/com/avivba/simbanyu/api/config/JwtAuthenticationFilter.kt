@@ -1,7 +1,7 @@
 package com.avivba.simbanyu.api.config
 
-import com.avivba.simbanyu.api.service.CustomUserDetailsService
-import com.avivba.simbanyu.api.service.TokenService
+import com.avivba.simbanyu.api.features.user.CustomUserDetailsService
+import com.avivba.simbanyu.api.features.auth.TokenService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

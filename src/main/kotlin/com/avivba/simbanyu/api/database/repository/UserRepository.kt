@@ -1,9 +1,0 @@
-package com.avivba.simbanyu.api.database.repository
-
-import com.avivba.simbanyu.api.database.entity.User
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface UserRepository : JpaRepository<User, String> {
-    fun findUserByUsernameOrPhoneNumber(username: String, phoneNumber: String): User?
-    fun findByUsername(username: String): User
-}

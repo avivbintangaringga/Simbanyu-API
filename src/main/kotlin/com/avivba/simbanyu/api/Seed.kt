@@ -1,8 +1,8 @@
 package com.avivba.simbanyu.api
 
-import com.avivba.simbanyu.api.database.entity.User
-import com.avivba.simbanyu.api.database.entity.UserRole
-import com.avivba.simbanyu.api.database.repository.UserRepository
+import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.user.UserRole
+import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
