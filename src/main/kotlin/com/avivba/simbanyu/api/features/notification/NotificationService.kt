@@ -15,6 +15,7 @@ class NotificationService(
         body: String,
     ) {
         // TODO: Implement broadcast notification
+        println("Broadcast notification: $title - $body")
     }
 
     fun sendNotificationToUser(
@@ -23,6 +24,7 @@ class NotificationService(
         user: User
     ) {
         // TODO: Implement notification to user
+        println("Notification to user (${user.username}): $title - $body")
     }
 
     fun getUserNotifications(
