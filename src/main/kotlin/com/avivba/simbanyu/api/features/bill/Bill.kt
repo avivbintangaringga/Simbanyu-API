@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.bill
 
 import com.avivba.simbanyu.api.features.subscriber.Subscriber
+import com.avivba.simbanyu.api.features.usage.Usage
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.util.Collections.emptyList
 import java.util.UUID
@@ -32,12 +34,9 @@ class Bill(
     @ManyToOne
     var subscriber: Subscriber,
 
+    @OneToOne
+    var usage: Usage,
+
     @OneToMany(mappedBy = "bill")
     var billItems: MutableList<BillItem> = emptyList(),
 )
-
-enum class BillStatus {
-    PAID,
-    UNPAID,
-    PENDING
-}
