@@ -19,7 +19,6 @@ class BillService(
     private val subscriberRepository: SubscriberRepository,
     private val usageRepository: UsageRepository,
     private val notificationService: NotificationService,
-    private val planRepository: PlanRepository,
     private val priceProperties: PriceProperties
 ) {
     @Transactional

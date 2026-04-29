@@ -1,12 +1,15 @@
 package com.avivba.simbanyu.api.features.usage
 
+import com.avivba.simbanyu.api.features.bill.Bill
 import com.avivba.simbanyu.api.features.subscriber.Subscriber
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -30,11 +33,14 @@ class Usage(
     @Column(nullable = false)
     var evidenceImageUrl: String,
 
-    @Column(nullable = false)
-    var operatorNotes: String,
+    @Column
+    var operatorNotes: String? = null,
 
     @ManyToOne
     var subscriber: Subscriber,
+
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    var bill: Bill? = null,
 
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),
