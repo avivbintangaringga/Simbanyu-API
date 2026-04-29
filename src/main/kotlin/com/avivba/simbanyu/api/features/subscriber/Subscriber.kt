@@ -3,6 +3,7 @@ package com.avivba.simbanyu.api.features.subscriber
 import com.avivba.simbanyu.api.features.usage.Usage
 import com.avivba.simbanyu.api.features.user.User
 import com.avivba.simbanyu.api.features.bill.Bill
+import com.avivba.simbanyu.api.features.plans.Plan
 import com.avivba.simbanyu.api.features.report.Report
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -11,6 +12,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -32,10 +34,6 @@ class Subscriber(
     var meterId: String = "",
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var subscriberType: SubscriberType = SubscriberType.RESIDENTIAL,
-
-    @Column(nullable = false)
     var address: String = "",
 
     @Column(nullable = false)
@@ -52,6 +50,9 @@ class Subscriber(
 
     @OneToMany(mappedBy = "subscriber")
     var bills: MutableList<Bill> = emptyList(),
+
+    @ManyToOne
+    var plan: Plan,
 
     @OneToOne
     var user: User,
