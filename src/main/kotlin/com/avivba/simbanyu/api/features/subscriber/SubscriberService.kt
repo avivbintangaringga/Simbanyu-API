@@ -1,12 +1,76 @@
 package com.avivba.simbanyu.api.features.subscriber
 
+import com.avivba.simbanyu.api.features.plans.PlanDto
+import com.avivba.simbanyu.api.features.plans.PlanRepository
+import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.user.UserDto
 import com.avivba.simbanyu.api.features.user.UserRepository
+import com.sun.rowset.internal.Row
+import jakarta.transaction.Transactional
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.Instant
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.ZoneId
+import java.util.UUID
 
 @Service
 class SubscriberService(
     private val subscriberRepository: SubscriberRepository,
     private val userRepository: UserRepository,
+    private val planRepository: PlanRepository,
+    private val encoder: PasswordEncoder,
 ) {
-    // TOOD: Implement usages first to get subscriber's meter
+    fun getAllSubscribers(): List<SubscriberDto> {
+        val results = subscriberRepository.findAllWithLastUsageDate()
+        val currentMonth = YearMonth.now(ZoneId.systemDefault())
+
+        return results.map { rowToDto(it, currentMonth) }
+    }
+
+    fun getSubscriberById(id: String): SubscriberDto {
+        val row = subscriberRepository.findByIdWithLastUsageDate(UUID.fromString(id))
+        val currentMonth = YearMonth.now(ZoneId.systemDefault())
+        return rowToDto(row, currentMonth)
+    }
+
+    @Transactional
+    fun addSubscriber(
+        data: AddSubscriberRequest,
+    ): Subscriber {
+        val user = User(
+            username = data.meterId,
+            password = encoder.encode(data.password)!!,
+            name = data.name,
+            phoneNumber = data.phoneNumber,
+        )
+
+        val plan = planRepository.findById(UUID.fromString(data.planId)).orElseThrow()
+        val savedUser = userRepository.save(user)
+        val subscriber = Subscriber(
+            meterId = data.meterId,
+            address = data.address,
+            longitude = data.longitude,
+            latitude = data.latitude,
+            plan = plan,
+            user = savedUser,
+        )
+
+        return subscriberRepository.save(subscriber)
+    }
+
+    private fun rowToDto(row: Array<Any?>, currentMonth: YearMonth): SubscriberDto {
+        val subscriber = row[0] as Subscriber
+        val lastRecordedAt = row[1] as Instant?
+        val isRecorded = lastRecordedAt?.let {
+            currentMonth == YearMonth.from(it.atZone(ZoneId.systemDefault()))
+        } ?: false
+
+        return SubscriberDto.fromEntity(
+            subscriber,
+            isRecorded,
+            lastRecordedAt?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()).toString() }
+        )
+    }
 }
