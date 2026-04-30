@@ -1,5 +1,7 @@
 package com.avivba.simbanyu.api.features.subscriber
 
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 
 data class AddSubscriberRequest(
@@ -21,9 +23,11 @@ data class AddSubscriberRequest(
     @NotBlank
     val address: String,
 
-    @NotBlank
+    @Min(-180)
+    @Max(180)
     val longitude: Double,
 
-    @NotBlank
+    @Min(-90)
+    @Max(90)
     val latitude: Double,
 )
