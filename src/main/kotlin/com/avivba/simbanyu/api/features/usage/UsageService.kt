@@ -45,6 +45,9 @@ class UsageService(
 
         val result = usageRepository.save(usage)
 
+        // TODO: Add notification
+        // TODO: Add activity record
+
         billService.generateBill(
             subscriberId = data.subscriberId,
             usageId = result.id.toString()
