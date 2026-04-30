@@ -19,7 +19,8 @@ class UserService(
             name = addUserRequest.name,
             phoneNumber = addUserRequest.phoneNumber,
             photoImageURL = addUserRequest.photoImageURL,
-            password = encoder.encode(addUserRequest.password)!!
+            password = encoder.encode(addUserRequest.password)!!,
+            role = UserRole.valueOf(addUserRequest.role),
         )
 
         return userRepository.save(user)
