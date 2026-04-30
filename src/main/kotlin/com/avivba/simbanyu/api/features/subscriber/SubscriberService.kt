@@ -1,11 +1,8 @@
 package com.avivba.simbanyu.api.features.subscriber
 
-import com.avivba.simbanyu.api.features.plans.PlanDto
 import com.avivba.simbanyu.api.features.plans.PlanRepository
 import com.avivba.simbanyu.api.features.user.User
-import com.avivba.simbanyu.api.features.user.UserDto
 import com.avivba.simbanyu.api.features.user.UserRepository
-import com.sun.rowset.internal.Row
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -37,7 +34,7 @@ class SubscriberService(
 
     @Transactional
     fun addSubscriber(
-        data: AddSubscriberRequest,
+        data: SubscriberRequest,
     ): Subscriber {
         val user = User(
             username = data.meterId,
@@ -58,6 +55,27 @@ class SubscriberService(
         )
 
         return subscriberRepository.save(subscriber)
+    }
+
+    fun updateSubscriber(
+        id: String,
+        data: SubscriberRequest
+    ): Subscriber {
+        val subscriber = subscriberRepository.findById(UUID.fromString(id)).orElseThrow()
+
+        subscriber.meterId = data.meterId
+        subscriber.address = data.address
+        subscriber.longitude = data.longitude
+        subscriber.latitude = data.latitude
+        subscriber.plan = planRepository.findById(UUID.fromString(data.planId)).orElseThrow()
+
+        return subscriberRepository.save(subscriber)
+    }
+
+    fun deleteSubscriberById(id: String) {
+        val subscriber = subscriberRepository.findById(UUID.fromString(id)).orElseThrow()
+        userRepository.delete(subscriber.user)
+        subscriberRepository.delete(subscriber)
     }
 
     private fun rowToDto(row: Array<Any?>, currentMonth: YearMonth): SubscriberDto {
