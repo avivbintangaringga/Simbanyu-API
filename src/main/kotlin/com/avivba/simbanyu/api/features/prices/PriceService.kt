@@ -13,7 +13,7 @@ class PriceService(
     private val planRepository: PlanRepository,
 ) {
     fun getAllPricesOfAPlan(planId: String): List<Price> {
-        return priceRepository.findAllByPlan_Id(UUID.fromString(planId))
+        return priceRepository.findByPlan_IdOrderByTierOrder(UUID.fromString(planId))
     }
 
     fun getPriceById(id: String): Price {

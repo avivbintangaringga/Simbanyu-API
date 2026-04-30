@@ -30,7 +30,7 @@ class Price(
     )
     var plan: Plan,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     var maxVolume: Int? = null,
 
     @Column(nullable = false)
