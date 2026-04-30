@@ -19,7 +19,7 @@ class AnnouncementService(
                 UUID.fromString(id)
             ).orElseThrow()
 
-    fun addAnnouncement(data: AddAnnouncementRequest): Announcement {
+    fun addAnnouncement(data: AnnouncementRequest): Announcement {
         val announcement = announcementRepository
             .save(
                 Announcement(
@@ -36,7 +36,7 @@ class AnnouncementService(
         return announcement
     }
 
-    fun updateAnnouncement(id: String, data: AddAnnouncementRequest): Announcement {
+    fun updateAnnouncement(id: String, data: AnnouncementRequest): Announcement {
         val announcement = announcementRepository
             .findById(
                 UUID.fromString(id)

@@ -41,7 +41,7 @@ class AnnouncementController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PostMapping
     fun addAnnouncement(
-        @Valid @RequestBody body: AddAnnouncementRequest
+        @Valid @RequestBody body: AnnouncementRequest
     ): ApiResponse<AnnouncementDto> =
         announcementService.addAnnouncement(body)
             .let {
@@ -54,7 +54,7 @@ class AnnouncementController(
     @PutMapping("/{id}")
     fun updateAnnouncement(
         @PathVariable id: String,
-        @Valid @RequestBody body: AddAnnouncementRequest
+        @Valid @RequestBody body: AnnouncementRequest
     ): ApiResponse<AnnouncementDto> =
         announcementService
             .updateAnnouncement(
