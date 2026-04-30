@@ -34,7 +34,7 @@ class SubscriberService(
 
     @Transactional
     fun addSubscriber(
-        data: SubscriberRequest,
+        data: AddSubscriberRequest,
     ): Subscriber {
         val user = User(
             username = data.meterId,
@@ -59,7 +59,7 @@ class SubscriberService(
 
     fun updateSubscriber(
         id: String,
-        data: SubscriberRequest
+        data: UpdateSubscriberRequest
     ): Subscriber {
         val subscriber = subscriberRepository.findById(UUID.fromString(id)).orElseThrow()
 

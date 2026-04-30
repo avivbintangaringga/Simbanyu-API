@@ -2,7 +2,7 @@ package com.avivba.simbanyu.api.features.subscriber
 
 import jakarta.validation.constraints.NotBlank
 
-data class SubscriberRequest(
+data class AddSubscriberRequest(
     @NotBlank
     val name: String,
 

@@ -38,7 +38,7 @@ class SubscriberController(
 
     @PostMapping
     fun addSubscriber(
-        @Valid @RequestBody body: SubscriberRequest
+        @Valid @RequestBody body: AddSubscriberRequest
     ): ApiResponse<SubscriberDto> {
         return subscriberService.addSubscriber(body).let {
             ApiResponse.success(SubscriberDto.fromEntity(it))
@@ -48,7 +48,7 @@ class SubscriberController(
     @PutMapping("/{id}")
     fun updateSubscriber(
         @PathVariable id: String,
-        @Valid @RequestBody body: SubscriberRequest
+        @Valid @RequestBody body: UpdateSubscriberRequest
     ): ApiResponse<SubscriberDto> {
         return subscriberService.updateSubscriber(id, body).let {
             ApiResponse.success(SubscriberDto.fromEntity(it))
