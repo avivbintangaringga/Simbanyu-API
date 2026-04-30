@@ -16,10 +16,11 @@ class UserService(
 
     fun addUser(addUserRequest: AddUserRequest): User {
         val user = User(
+            username = addUserRequest.username,
+            password = encoder.encode(addUserRequest.password)!!,
             name = addUserRequest.name,
             phoneNumber = addUserRequest.phoneNumber,
             photoImageURL = addUserRequest.photoImageURL,
-            password = encoder.encode(addUserRequest.password)!!,
             role = UserRole.valueOf(addUserRequest.role),
         )
 
@@ -33,7 +34,7 @@ class UserService(
 
         data.name?.let { user.name = it }
         data.phoneNumber?.let { user.phoneNumber = it }
-        data.photoImageURL?.let { user.photoImageURL = it }
+        user.photoImageURL = data.photoImageURL
         data.password?.let { user.password = encoder.encode(it)!! }
 
         val updatedUser = userRepository.save(user)

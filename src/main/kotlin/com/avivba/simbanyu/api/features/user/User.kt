@@ -35,6 +35,7 @@ class User(
     @Column(nullable = false, unique = true)
     var phoneNumber: String = "",
 
+    @Column(nullable = true)
     var photoImageURL: String? = null,
 
     @Column(nullable = false)
