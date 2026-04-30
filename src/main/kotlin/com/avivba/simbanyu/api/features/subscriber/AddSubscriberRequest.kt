@@ -5,10 +5,19 @@ import jakarta.validation.constraints.Pattern
 
 data class AddSubscriberRequest(
     @NotBlank
+    val name: String,
+
+    @NotBlank
+    val phoneNumber: String,
+
+    @NotBlank
+    val password: String,
+
+    @NotBlank
     val meterId: String,
 
     @NotBlank
-    val plan: String,
+    val planId: String,
 
     @NotBlank
     val address: String,
@@ -18,7 +27,4 @@ data class AddSubscriberRequest(
 
     @NotBlank
     val latitude: Double,
-
-    @NotBlank
-    val userId: String,
 )
