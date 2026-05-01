@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.usage
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
@@ -21,27 +22,37 @@ import org.springframework.web.bind.annotation.RestController
 class UsageController(
     private val usageService: UsageService,
     private val userRepository: UserRepository,
+    private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
     fun getSubscriberUsageWithLimit(
         @RequestParam("subscriberId") subscriberId: String?,
         @RequestParam("limit") limit: Int?,
+        @AuthenticationPrincipal userDetails: UserDetails
     ): ApiResponse<List<UsageDto>> {
-        return if (subscriberId == null) {
-            usageService.getAllUsage()
-                .map { UsageDto.fromEntity(it) }
-                .let {
-                    ApiResponse.success(it)
-                }
+        val isAdmin = userDetails.authorities.any { it.authority == "ROLE_ADMIN" }
+        val isOperator = userDetails.authorities.any { it.authority == "ROLE_OPERATOR" }
+
+        return (if (isAdmin || isOperator) {
+            if (subscriberId == null) {
+                usageService.getAllUsage()
+            } else {
+                usageService.getUsageBySubscriberId(subscriberId)
+            }
         } else {
+            val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
+            if (subscriber.isEmpty()) {
+                throw Exception("User is not a subscriber")
+            }
+
+            val subscriberId = subscriber[0].id.toString()
             usageService.getUsageBySubscriberId(
                 subscriberId,
                 limit
-            ).map { UsageDto.fromEntity(it) }
-                .let {
-                    ApiResponse.success(it)
-                }
-        }
+            )
+        })
+            .map { UsageDto.fromEntity(it) }
+            .let { ApiResponse.success(it) }
     }
 
     @PostMapping
