@@ -68,11 +68,13 @@ class UsageService(
         }
 
         // TODO: Check if current month is already recorded
+        // TODO: Store image and get URL
+        val imageUrl = ""
 
         val usage = Usage(
             meterStart = previousUsage.meterEnd,
             meterEnd = data.currentMeter,
-            evidenceImageUrl = data.evidenceImageURL,
+            evidenceImageUrl = imageUrl,
             operatorNotes = data.operatorNotes,
             subscriber = subscriber
         )
@@ -114,8 +116,11 @@ class UsageService(
             throw IllegalStateException("Current meter must be greater than previous meter")
         }
 
+        // TODO: Store image and get URL
+        val imageUrl = ""
+
         usage.meterEnd = data.currentMeter
-        usage.evidenceImageUrl = data.evidenceImageURL
+        usage.evidenceImageUrl = imageUrl
         usage.operatorNotes = data.operatorNotes
 
         val bill = usage.bill ?: throw IllegalStateException("Usage doesn't have a bill associated")

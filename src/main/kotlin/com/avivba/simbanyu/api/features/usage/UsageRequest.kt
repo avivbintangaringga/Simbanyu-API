@@ -12,8 +12,7 @@ data class UsageRequest(
     val currentMeter: Int,
 
     @NotBlank
-    @URL
-    val evidenceImageURL: String,
+    val evidenceImage: String,
 
     val operatorNotes: String? = null,
 )
