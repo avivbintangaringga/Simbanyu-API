@@ -10,4 +10,18 @@ data class ReportDto(
     val handlingEvidenceImageURL: String? = null,
     val createdAt: String,
     val updatedAt: String,
-)
+) {
+    companion object {
+        fun fromEntity(report: Report) = ReportDto(
+            id = report.id.toString(),
+            address = report.address,
+            description = report.description,
+            status = report.status.name,
+            evidenceImageURL = report.evidenceImageUrl,
+            operatorNotes = report.operatorNotes,
+            handlingEvidenceImageURL = report.handlingEvidenceImageUrl,
+            createdAt = report.createdAt.toString(),
+            updatedAt = report.updatedAt.toString(),
+        )
+    }
+}

@@ -12,4 +12,5 @@ interface SubscriberRepository : JpaRepository<Subscriber, UUID> {
 
     @Query("SELECT s, (SELECT MAX(u.createdAt) FROM Usage u WHERE u.subscriber = s) FROM Subscriber s WHERE s.id = :id")
     fun findByIdWithLastUsageDate(id: UUID): Array<Any?>
+    fun findSubscriberByUser_Username(userUsername: String): MutableList<Subscriber>
 }

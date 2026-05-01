@@ -26,6 +26,12 @@ class Report(
     @Column(nullable = false)
     var address: String = "",
 
+    @Column(nullable = true)
+    var longitude: Double? = null,
+
+    @Column(nullable = true)
+    var latitude: Double? = null,
+
     @Column(nullable = false)
     var description: String = "",
 
