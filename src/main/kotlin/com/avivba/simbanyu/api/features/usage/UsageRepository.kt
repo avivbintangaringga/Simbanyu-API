@@ -9,5 +9,10 @@ interface UsageRepository : JpaRepository<Usage, UUID> {
     @Query("SELECT u FROM Usage u WHERE u.subscriber.id = :id ORDER BY u.createdAt DESC LIMIT :limit")
     fun getUsageBySubscriberIdWithLimit(id: UUID, limit: Int): List<Usage>
 
-    fun findUsagesBySubscriberIdOrderByCreatedAtDesc(subscriberId: UUID): List<Usage>
+    fun findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
+        subscriberId: UUID,
+        isInitial: Boolean = false
+    ): List<Usage>
+
+    fun findFirstBySubscriberOrderByCreatedAtDesc(subscriber: Subscriber): Usage?
 }

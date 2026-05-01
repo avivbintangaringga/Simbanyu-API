@@ -9,11 +9,8 @@ data class RecordUsageRequest(
     val subscriberId: String,
 
     @NotBlank
-    val meterStart: Int,
-
-    @NotBlank
     @Min(1)
-    val amount: Int,
+    val currentMeter: Int,
 
     @NotBlank
     @URL

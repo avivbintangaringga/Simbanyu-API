@@ -23,10 +23,30 @@ class UsageService(
                 limit
             )
         } else {
-            usageRepository.findUsagesBySubscriberIdOrderByCreatedAtDesc(
-                UUID.fromString(subscriberId)
+            usageRepository.findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
+                UUID.fromString(subscriberId),
+                isInitial = false
             )
         }
+    }
+
+    fun addInitialUsage(
+        subscriberId: String,
+        currentMeter: Int,
+    ): Usage {
+        val subscriber = subscriberRepository.findById(UUID.fromString(subscriberId)).orElseThrow()
+
+        val usage = Usage(
+            meterStart = currentMeter,
+            meterEnd = currentMeter,
+            isInitial = true,
+            evidenceImageUrl = "https://example.com/image.jpg",
+            operatorNotes = null,
+            subscriber = subscriber,
+            bill = null,
+        )
+
+        return usageRepository.save(usage)
     }
 
     @Transactional
@@ -34,10 +54,12 @@ class UsageService(
         data: RecordUsageRequest
     ): Usage {
         val subscriber = subscriberRepository.findById(UUID.fromString(data.subscriberId)).orElseThrow()
+        val previousUsage = usageRepository.findFirstBySubscriberOrderByCreatedAtDesc(subscriber)
+            ?: throw IllegalStateException("Subscriber doesn't have any previous usage record")
 
         val usage = Usage(
-            meterStart = data.meterStart,
-            amount = data.amount,
+            meterStart = previousUsage.meterEnd,
+            meterEnd = data.currentMeter,
             evidenceImageUrl = data.evidenceImageURL,
             operatorNotes = data.operatorNotes,
             subscriber = subscriber

@@ -1,6 +1,8 @@
 package com.avivba.simbanyu.api.features.subscriber
 
 import com.avivba.simbanyu.api.features.plans.PlanRepository
+import com.avivba.simbanyu.api.features.usage.UsageRepository
+import com.avivba.simbanyu.api.features.usage.UsageService
 import com.avivba.simbanyu.api.features.user.User
 import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.transaction.Transactional
@@ -17,6 +19,7 @@ class SubscriberService(
     private val subscriberRepository: SubscriberRepository,
     private val userRepository: UserRepository,
     private val planRepository: PlanRepository,
+    private val usageService: UsageService,
     private val encoder: PasswordEncoder,
 ) {
     fun getAllSubscribers(): List<SubscriberDto> {
@@ -54,7 +57,14 @@ class SubscriberService(
             user = savedUser,
         )
 
-        return subscriberRepository.save(subscriber)
+        val savedSubscriber = subscriberRepository.save(subscriber)
+
+        usageService.addInitialUsage(
+            subscriberId = savedSubscriber.id.toString(),
+            data.initialMeter
+        )
+
+        return savedSubscriber
     }
 
     fun updateSubscriber(

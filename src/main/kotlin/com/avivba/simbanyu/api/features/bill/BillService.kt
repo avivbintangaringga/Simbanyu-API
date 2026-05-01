@@ -30,7 +30,8 @@ class BillService(
         val usage = usageRepository.findById(UUID.fromString(usageId)).orElseThrow()
 
         val plan = subscriber.plan
-        val tieredCost = calculateTieredCost(plan, usage.amount)
+        val usageAmount = usage.meterEnd - usage.meterStart
+        val tieredCost = calculateTieredCost(plan, usageAmount)
 
         val items = listOf(
             BillItem(
@@ -38,7 +39,7 @@ class BillService(
                 amount = plan.basePrice
             ),
             BillItem(
-                name = "Biaya penggunaan (${usage.amount} m³)",
+                name = "Biaya penggunaan (${usageAmount} m³)",
                 amount = tieredCost
             ),
             BillItem(

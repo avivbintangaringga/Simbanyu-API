@@ -28,7 +28,10 @@ class Usage(
     var meterStart: Int,
 
     @Column(nullable = false)
-    var amount: Int,
+    var meterEnd: Int,
+
+    @Column(nullable = false)
+    var isInitial: Boolean = false,
 
     @Column(nullable = false)
     var evidenceImageUrl: String,

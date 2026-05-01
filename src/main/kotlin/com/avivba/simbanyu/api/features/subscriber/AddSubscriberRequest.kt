@@ -18,6 +18,9 @@ data class AddSubscriberRequest(
     val meterId: String,
 
     @NotBlank
+    val initialMeter: Int,
+
+    @NotBlank
     val planId: String,
 
     @NotBlank
