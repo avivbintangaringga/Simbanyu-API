@@ -80,6 +80,14 @@ class UsageService(
 
         val result = usageRepository.save(usage)
 
+        val bill = billService.generateBill(
+            subscriber = subscriber,
+            usage = result
+        )
+
+        result.bill = bill
+        val finalResult = usageRepository.save(result)
+
         notificationService.sendNotificationToUser(
             title = "Pencatatan Meter (${subscriber.meterId})",
             body = "Pencatatan meter berhasil dilakukan.",
@@ -92,12 +100,7 @@ class UsageService(
             user = user,
         )
 
-        billService.generateBill(
-            subscriber = subscriber,
-            usage = result
-        )
-
-        return result
+        return finalResult
     }
 
     @Transactional
@@ -107,6 +110,10 @@ class UsageService(
         user: User,
     ): Usage {
         val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()
+
+        if (data.currentMeter <= usage.meterStart) {
+            throw IllegalStateException("Current meter must be greater than previous meter")
+        }
 
         usage.meterEnd = data.currentMeter
         usage.evidenceImageUrl = data.evidenceImageURL
