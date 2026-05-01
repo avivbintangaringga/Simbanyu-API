@@ -17,7 +17,7 @@ data class AddSubscriberRequest(
     @NotBlank
     val meterId: String,
 
-    @NotBlank
+    @Min(0)
     val initialMeter: Int,
 
     @NotBlank
