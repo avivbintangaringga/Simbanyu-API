@@ -4,7 +4,9 @@ import com.avivba.simbanyu.api.config.PriceProperties
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.plans.Plan
 import com.avivba.simbanyu.api.features.plans.PlanRepository
+import com.avivba.simbanyu.api.features.subscriber.Subscriber
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
+import com.avivba.simbanyu.api.features.usage.Usage
 import com.avivba.simbanyu.api.features.usage.UsageRepository
 import com.avivba.simbanyu.api.features.usage.UsageService
 import com.avivba.simbanyu.api.utils.getMonthName
@@ -16,38 +18,19 @@ import java.util.UUID
 class BillService(
     private val billRepository: BillRepository,
     private val billItemRepository: BillItemRepository,
-    private val subscriberRepository: SubscriberRepository,
-    private val usageRepository: UsageRepository,
     private val notificationService: NotificationService,
     private val priceProperties: PriceProperties
 ) {
     @Transactional
     fun generateBill(
-        subscriberId: String,
-        usageId: String,
+        subscriber: Subscriber,
+        usage: Usage,
     ): Bill {
-        val subscriber = subscriberRepository.findById(UUID.fromString(subscriberId)).orElseThrow()
-        val usage = usageRepository.findById(UUID.fromString(usageId)).orElseThrow()
-
         val plan = subscriber.plan
         val usageAmount = usage.meterEnd - usage.meterStart
         val tieredCost = calculateTieredCost(plan, usageAmount)
 
-        val items = listOf(
-            BillItem(
-                name = "Biaya tetap",
-                amount = plan.basePrice
-            ),
-            BillItem(
-                name = "Biaya penggunaan (${usageAmount} m³)",
-                amount = tieredCost
-            ),
-            BillItem(
-                name = "Biaya admin",
-                amount = priceProperties.admin
-            )
-        )
-
+        val items = createBillItems(plan, usageAmount, tieredCost)
         val billItems = billItemRepository.saveAll(items)
         val totalCost = billItems.sumOf { it.amount }
 
@@ -70,7 +53,49 @@ class BillService(
         return billResult
     }
 
-    fun calculateTieredCost(
+    @Transactional
+    fun updateBillWithUsage(
+        bill: Bill,
+        usage: Usage,
+    ): Bill {
+        val plan = bill.subscriber.plan
+        val usageAmount = usage.meterEnd - usage.meterStart
+        val tieredCost = calculateTieredCost(plan, usageAmount)
+
+        billItemRepository.deleteAll(bill.billItems)
+
+        val items = createBillItems(plan, usageAmount, tieredCost)
+        val billItems = billItemRepository.saveAll(items)
+        val totalCost = billItems.sumOf { it.amount }
+
+        // Update
+        bill.amount = totalCost
+        bill.billItems = billItems
+        bill.usage = usage
+
+        return billRepository.save(bill)
+    }
+
+    private fun createBillItems(
+        plan: Plan,
+        usageAmount: Int,
+        tieredCost: Double,
+    ) = listOf(
+        BillItem(
+            name = "Biaya tetap",
+            amount = plan.basePrice
+        ),
+        BillItem(
+            name = "Biaya penggunaan (${usageAmount} m³)",
+            amount = tieredCost
+        ),
+        BillItem(
+            name = "Biaya admin",
+            amount = priceProperties.admin
+        )
+    )
+
+    private fun calculateTieredCost(
         plan: Plan,
         usageAmount: Int,
     ): Double {
