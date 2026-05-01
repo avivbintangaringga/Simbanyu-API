@@ -57,6 +57,10 @@ class UsageService(
         val previousUsage = usageRepository.findFirstBySubscriberOrderByCreatedAtDesc(subscriber)
             ?: throw IllegalStateException("Subscriber doesn't have any previous usage record")
 
+        if (data.currentMeter <= previousUsage.meterEnd) {
+            throw IllegalStateException("Current meter must be greater than previous meter")
+        }
+
         val usage = Usage(
             meterStart = previousUsage.meterEnd,
             meterEnd = data.currentMeter,
