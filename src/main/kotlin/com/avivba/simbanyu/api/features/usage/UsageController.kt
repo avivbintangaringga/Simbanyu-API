@@ -35,9 +35,10 @@ class UsageController(
     fun getSubscriberUsageWithLimit(
         @RequestParam("subscriberId") subscriberId: String?,
         @RequestParam("limit") limit: Int?,
-    ): ApiResponse<List<Usage>> {
+    ): ApiResponse<List<UsageDto>> {
         return if (subscriberId == null) {
             usageService.getAllUsage()
+                .map { UsageDto.fromEntity(it) }
                 .let {
                     ApiResponse.success(it)
                 }
@@ -45,9 +46,10 @@ class UsageController(
             usageService.getUsageBySubscriberId(
                 subscriberId,
                 limit
-            ).let {
-                ApiResponse.success(it)
-            }
+            ).map { UsageDto.fromEntity(it) }
+                .let {
+                    ApiResponse.success(it)
+                }
         }
     }
 
@@ -55,8 +57,8 @@ class UsageController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     fun recordUsage(
         @Valid @RequestBody data: RecordUsageRequest
-    ): ApiResponse<Usage> {
+    ): ApiResponse<UsageDto> {
         val usage = usageService.recordUsage(data)
-        return ApiResponse.success(usage)
+        return ApiResponse.success(UsageDto.fromEntity(usage))
     }
 }
