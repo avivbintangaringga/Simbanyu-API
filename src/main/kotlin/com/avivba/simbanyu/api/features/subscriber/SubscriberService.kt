@@ -31,6 +31,7 @@ class SubscriberService(
 
     fun getSubscriberById(id: String): SubscriberDto {
         val row = subscriberRepository.findByIdWithLastUsageDate(UUID.fromString(id))
+        // TODO: Find a better way to get the current month
         val currentMonth = YearMonth.now(ZoneId.systemDefault())
         return rowToDto(row, currentMonth)
     }
