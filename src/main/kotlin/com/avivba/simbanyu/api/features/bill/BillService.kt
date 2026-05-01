@@ -76,6 +76,41 @@ class BillService(
         return billRepository.save(bill)
     }
 
+    fun updateBillStatus(
+        bill: Bill,
+        status: BillStatus,
+    ): Bill {
+        bill.status = status
+        val updatedBill = billRepository.save(bill)
+        val user = bill.subscriber.user
+
+        when (status) {
+            BillStatus.PAID -> {
+                notificationService.sendNotificationToUser(
+                    title = "Tagihan Selesai Dibayar",
+                    body = "Tagihan bulan ${updatedBill.createdAt.getMonthName()} telah berhasil dibayar",
+                    user = user
+                )
+            }
+            BillStatus.UNPAID -> {
+                notificationService.sendNotificationToUser(
+                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
+                    body = "Anda belum melakukan pembayaran, segera lakukan pembayaran",
+                    user = user
+                )
+            }
+            BillStatus.PENDING -> {
+                notificationService.sendNotificationToUser(
+                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
+                    body = "Permintaan pembayaran telah dibuat, segera lakukan pembayaran",
+                    user = user
+                )
+            }
+        }
+
+        return updatedBill
+    }
+
     private fun createBillItems(
         plan: Plan,
         usageAmount: Int,
