@@ -36,7 +36,7 @@ class Usage(
     @Column(nullable = false)
     var evidenceImageUrl: String,
 
-    @Column
+    @Column(nullable = true)
     var operatorNotes: String? = null,
 
     @ManyToOne

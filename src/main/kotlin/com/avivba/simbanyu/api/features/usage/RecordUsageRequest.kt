@@ -8,7 +8,6 @@ data class RecordUsageRequest(
     @NotBlank
     val subscriberId: String,
 
-    @NotBlank
     @Min(1)
     val currentMeter: Int,
 
@@ -16,6 +15,5 @@ data class RecordUsageRequest(
     @URL
     val evidenceImageURL: String,
 
-    @NotBlank
     val operatorNotes: String? = null,
 )
