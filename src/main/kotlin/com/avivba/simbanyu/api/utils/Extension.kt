@@ -9,9 +9,12 @@ import java.util.Locale
 fun Instant.getMonthName(): String {
     // TODO: Use a better way to get the month name
     val idLocale = Locale.forLanguageTag("id-ID")
-    val jakartaZone = ZoneId.of("Asia/Jakarta")
-    val formatter = DateTimeFormatter.ofPattern("MMMM", idLocale).withZone(jakartaZone)
+    val formatter = DateTimeFormatter.ofPattern("MMMM", idLocale).withZone(ZoneId.systemDefault())
     return formatter.format(this)
+}
+
+fun Instant.getYear(): Int {
+    return this.atZone(ZoneId.systemDefault()).year
 }
 
 fun Authentication.hasRole(role: String): Boolean {

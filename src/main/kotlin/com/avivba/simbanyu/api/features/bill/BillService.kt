@@ -21,6 +21,20 @@ class BillService(
     private val notificationService: NotificationService,
     private val priceProperties: PriceProperties
 ) {
+    fun getAllBills(): List<Bill> {
+        return billRepository.findAll()
+    }
+
+    fun getBillById(id: String): Bill {
+        return billRepository.findById(UUID.fromString(id)).orElseThrow()
+    }
+
+    fun getBillsBySubscriberId(
+        subscriberId: String
+    ): List<Bill> {
+        return billRepository.findBillsBySubscriber_Id(UUID.fromString(subscriberId))
+    }
+
     @Transactional
     fun generateBill(
         subscriber: Subscriber,
