@@ -1,6 +1,10 @@
 package com.avivba.simbanyu.api.features.user
 
+import com.avivba.simbanyu.api.features.activity.Activity
 import com.avivba.simbanyu.api.features.fcm.FcmToken
+import com.avivba.simbanyu.api.features.notification.Notification
+import com.avivba.simbanyu.api.features.subscriber.Subscriber
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -9,8 +13,11 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.UUID
@@ -42,8 +49,37 @@ class User(
     @Enumerated(EnumType.STRING)
     var role: UserRole = UserRole.SUBSCRIBER,
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var fcmTokens: MutableList<FcmToken> = mutableListOf(),
+
+    @OneToMany(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var notifications: MutableList<Notification> = mutableListOf(),
+
+    @OneToMany(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var activities: MutableList<Activity> = mutableListOf(),
+
+    @OneToOne(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var subscriber: Subscriber? = null,
 
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),

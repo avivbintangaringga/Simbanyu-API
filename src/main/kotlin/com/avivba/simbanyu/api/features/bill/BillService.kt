@@ -44,8 +44,7 @@ class BillService(
         val usageAmount = usage.meterEnd - usage.meterStart
         val tieredCost = calculateTieredCost(plan, usageAmount)
 
-        val items = createBillItems(plan, usageAmount, tieredCost)
-        val billItems = billItemRepository.saveAll(items)
+        val billItems = createBillItems(plan, usageAmount, tieredCost)
         val totalCost = billItems.sumOf { it.amount }
 
         val bill = Bill(
@@ -53,10 +52,13 @@ class BillService(
             status = BillStatus.UNPAID,
             subscriber = subscriber,
             usage = usage,
-            billItems = billItems,
         )
 
         val billResult = billRepository.save(bill)
+        billItemRepository.saveAll(billItems.map {
+            it.bill = billResult
+            it
+        })
 
         notificationService.sendNotificationToUser(
             title = "Tagihan Bulan ${usage.createdAt.getMonthName()}",
@@ -78,7 +80,7 @@ class BillService(
 
         billItemRepository.deleteAll(bill.billItems)
 
-        val items = createBillItems(plan, usageAmount, tieredCost)
+        val items = createBillItems(plan, usageAmount, tieredCost, bill)
         val billItems = billItemRepository.saveAll(items)
         val totalCost = billItems.sumOf { it.amount }
 
@@ -106,6 +108,7 @@ class BillService(
                     user = user
                 )
             }
+
             BillStatus.UNPAID -> {
                 notificationService.sendNotificationToUser(
                     title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
@@ -113,6 +116,7 @@ class BillService(
                     user = user
                 )
             }
+
             BillStatus.PENDING -> {
                 notificationService.sendNotificationToUser(
                     title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
@@ -129,18 +133,22 @@ class BillService(
         plan: Plan,
         usageAmount: Int,
         tieredCost: Double,
+        bill: Bill? = null
     ) = listOf(
         BillItem(
             name = "Biaya tetap",
-            amount = plan.basePrice
+            amount = plan.basePrice,
+            bill = bill
         ),
         BillItem(
             name = "Biaya penggunaan (${usageAmount} m³)",
-            amount = tieredCost
+            amount = tieredCost,
+            bill = bill
         ),
         BillItem(
             name = "Biaya admin",
-            amount = priceProperties.admin
+            amount = priceProperties.admin,
+            bill = bill
         )
     )
 

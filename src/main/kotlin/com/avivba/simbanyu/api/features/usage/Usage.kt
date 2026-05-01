@@ -13,6 +13,8 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.UUID
@@ -43,11 +45,12 @@ class Usage(
     @ManyToOne
     var subscriber: Subscriber,
 
-    // TODO: Check cascading on delete
     @OneToOne(
         mappedBy = "usage",
         cascade = [CascadeType.ALL],
+        orphanRemoval = true,
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var bill: Bill? = null,
 
     @CreationTimestamp

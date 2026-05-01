@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.bill
 
 import com.avivba.simbanyu.api.features.subscriber.Subscriber
 import com.avivba.simbanyu.api.features.usage.Usage
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -15,6 +16,8 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.Collections.emptyList
@@ -41,7 +44,12 @@ class Bill(
     @OneToOne
     var usage: Usage,
 
-    @OneToMany(mappedBy = "bill")
+    @OneToMany(
+        mappedBy = "bill",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var billItems: MutableList<BillItem> = emptyList(),
 
     @CreationTimestamp

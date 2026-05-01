@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.features.user.User
 import com.avivba.simbanyu.api.features.bill.Bill
 import com.avivba.simbanyu.api.features.plans.Plan
 import com.avivba.simbanyu.api.features.report.Report
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -17,6 +18,8 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.Collections.emptyList
@@ -42,13 +45,28 @@ class Subscriber(
     @Column(nullable = false)
     var latitude: Double = 0.0,
 
-    @OneToMany(mappedBy = "subscriber")
+    @OneToMany(
+        mappedBy = "subscriber",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var usages: MutableList<Usage> = emptyList(),
 
-    @OneToMany(mappedBy = "subscriber")
+    @OneToMany(
+        mappedBy = "subscriber",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var reports: MutableList<Report> = emptyList(),
 
-    @OneToMany(mappedBy = "subscriber")
+    @OneToMany(
+        mappedBy = "subscriber",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     var bills: MutableList<Bill> = emptyList(),
 
     @ManyToOne
