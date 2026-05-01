@@ -1,6 +1,8 @@
 package com.avivba.simbanyu.api.features.fcm
 
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
-interface FcmTokenRepository : JpaRepository<FcmToken, String> {
+interface FcmTokenRepository : JpaRepository<FcmToken, UUID> {
+    fun findFcmTokenByUser_UsernameOrderByCreatedAtDesc(username: String): List<FcmToken>
 }

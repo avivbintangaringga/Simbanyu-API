@@ -1,0 +1,29 @@
+package com.avivba.simbanyu.api.features.fcm
+
+import com.avivba.simbanyu.api.base.ApiResponse
+import jakarta.validation.Valid
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/fcmtoken")
+class FcmTokenController(
+    private val fcmTokenService: FcmTokenService
+) {
+    @PostMapping
+    fun saveFcmToken(
+        @Valid @RequestBody body: FcmTokenRequest,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ApiResponse<Unit> {
+        return fcmTokenService.submitToken(
+            body.token,
+            userDetails.username
+        ).let {
+            ApiResponse.success(Unit)
+        }
+    }
+}
