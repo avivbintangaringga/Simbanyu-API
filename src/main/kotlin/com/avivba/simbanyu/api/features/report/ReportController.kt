@@ -3,8 +3,10 @@ package com.avivba.simbanyu.api.features.report
 import com.avivba.simbanyu.api.base.ApiResponse
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.user.UserRepository
+import com.avivba.simbanyu.api.utils.hasRole
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -26,15 +28,15 @@ class ReportController(
 ) {
     @GetMapping
     fun getReports(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        authentication: Authentication
     ): ApiResponse<List<ReportDto>> {
-        val isAdmin = userDetails.authorities.any { it.authority == "ROLE_ADMIN" }
-        val isOperator = userDetails.authorities.any { it.authority == "ROLE_OPERATOR" }
+        val isAdmin = authentication.hasRole("ADMIN")
+        val isOperator = authentication.hasRole("OPERATOR")
 
         return (if (isAdmin || isOperator) {
             reportService.getAllReports()
         } else  {
-            val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
+            val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             if (subscriber.isNotEmpty()) {
                 reportService.getReportBySubscriberId(subscriberId = subscriber[0].id.toString())
             } else {
