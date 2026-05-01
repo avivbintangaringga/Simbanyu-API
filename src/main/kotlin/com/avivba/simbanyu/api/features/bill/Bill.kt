@@ -13,6 +13,9 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
 import java.util.Collections.emptyList
 import java.util.UUID
 
@@ -39,4 +42,10 @@ class Bill(
 
     @OneToMany(mappedBy = "bill")
     var billItems: MutableList<BillItem> = emptyList(),
+
+    @CreationTimestamp
+    var createdAt: Instant = Instant.now(),
+
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now(),
 )

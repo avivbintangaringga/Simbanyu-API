@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
 import java.util.UUID
 
 
@@ -26,4 +29,10 @@ class BillItem(
 
     @ManyToOne
     var bill: Bill? = null,
+
+    @CreationTimestamp
+    var createdAt: Instant = Instant.now(),
+
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now(),
 )
