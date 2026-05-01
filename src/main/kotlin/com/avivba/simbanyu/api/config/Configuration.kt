@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
     PriceProperties::class
 )
 class Configuration {
+    //TODO: Handle exceptions
 
     @Bean
     fun userDetailsService(
