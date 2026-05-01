@@ -46,7 +46,7 @@ class UsageController(
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     fun recordUsage(
-        @Valid @RequestBody data: RecordUsageRequest,
+        @Valid @RequestBody data: UsageRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): ApiResponse<UsageDto> {
         val user = userRepository.findByUsername(userDetails.username)
@@ -59,7 +59,7 @@ class UsageController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     fun updateRecord(
         @PathVariable id: String,
-        @Valid @RequestBody data: RecordUsageRequest,
+        @Valid @RequestBody data: UsageRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): ApiResponse<UsageDto> {
         val user = userRepository.findByUsername(userDetails.username)

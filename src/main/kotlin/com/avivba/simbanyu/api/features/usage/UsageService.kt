@@ -6,7 +6,6 @@ import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.user.User
 import jakarta.transaction.Transactional
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -57,7 +56,7 @@ class UsageService(
 
     @Transactional
     fun recordUsage(
-        data: RecordUsageRequest,
+        data: UsageRequest,
         user: User
     ): Usage {
         val subscriber = subscriberRepository.findById(UUID.fromString(data.subscriberId)).orElseThrow()
@@ -106,7 +105,7 @@ class UsageService(
     @Transactional
     fun updateUsage(
         id: String,
-        data: RecordUsageRequest,
+        data: UsageRequest,
         user: User,
     ): Usage {
         val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.URL
 
-data class RecordUsageRequest(
+data class UsageRequest(
     @NotBlank
     val subscriberId: String,
 
