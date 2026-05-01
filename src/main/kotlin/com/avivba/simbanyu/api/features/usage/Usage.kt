@@ -43,6 +43,7 @@ class Usage(
     @ManyToOne
     var subscriber: Subscriber,
 
+    // TODO: Check cascading on delete
     @OneToOne(
         mappedBy = "usage",
         cascade = [CascadeType.ALL],

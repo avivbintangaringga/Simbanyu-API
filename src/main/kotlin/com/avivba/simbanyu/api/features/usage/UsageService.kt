@@ -144,4 +144,8 @@ class UsageService(
 
         return updatedUsage
     }
+
+    fun deleteUsage(id: String) {
+        usageRepository.deleteById(UUID.fromString(id))
+    }
 }
