@@ -19,3 +19,7 @@ jwt:
 
 price:
   admin: 1000
+
+midtrans:
+  base-url: https://api.sandbox.midtrans.com/v2/
+  server-key: ${MIDTRANS_SERVER_KEY}
