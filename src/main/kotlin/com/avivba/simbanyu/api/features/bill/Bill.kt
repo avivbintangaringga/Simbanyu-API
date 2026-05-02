@@ -1,5 +1,6 @@
 package com.avivba.simbanyu.api.features.bill
 
+import com.avivba.simbanyu.api.features.midtrans.MidtransPayment
 import com.avivba.simbanyu.api.features.subscriber.Subscriber
 import com.avivba.simbanyu.api.features.usage.Usage
 import jakarta.persistence.CascadeType
@@ -51,6 +52,14 @@ class Bill(
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     var billItems: MutableList<BillItem> = emptyList(),
+
+    @OneToMany(
+        mappedBy = "bill",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var payments: MutableList<MidtransPayment> = emptyList(),
 
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),

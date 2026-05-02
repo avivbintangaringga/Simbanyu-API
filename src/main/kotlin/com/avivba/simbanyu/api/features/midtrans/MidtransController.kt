@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.midtrans
 
 import com.avivba.simbanyu.api.base.ApiResponse
 import com.avivba.simbanyu.api.features.bill.BillRepository
+import com.avivba.simbanyu.api.features.bill.BillStatus
 import com.avivba.simbanyu.api.features.midtrans.model.PaymentCallbackRequest
 import com.avivba.simbanyu.api.features.midtrans.model.RequestPaymentRequest
 import com.avivba.simbanyu.api.features.midtrans.model.RequestPaymentResponse
@@ -22,8 +23,9 @@ class MidtransController(
     @PostMapping("/callback")
     fun paymentCallback(
         @RequestBody body: PaymentCallbackRequest
-    ) {
-        // TODO: Handle callback from Midtrans
+    ): ApiResponse<Unit> {
+        midtransService.handleCallback(body)
+        return ApiResponse.success(Unit)
     }
 
     @PostMapping
@@ -37,6 +39,10 @@ class MidtransController(
 
         if (bills.isEmpty()) {
             throw IllegalArgumentException("Bills not found")
+        }
+
+        if (bills.any { it.status != BillStatus.UNPAID }) {
+            throw IllegalArgumentException("Bills must be unpaid to request payment.")
         }
 
         val paymentUrl = midtransService.requestSnapPayment(
