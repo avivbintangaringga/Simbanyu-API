@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.avivba.simbanyu",
+      "sha256_cert_fingerprints": [
+        "A5:98:A5:88:4B:DC:88:1F:62:96:F0:D9:24:1E:EC:06:EE:21:7F:5E:3E:29:2D:FB:0E:B3:07:53:41:7A:F6:96",
+        "65:0C:28:9E:30:E6:58:00:04:0B:9A:79:BD:10:BF:C7:C3:90:C1:2D:70:20:D0:92:68:3F:CF:AA:B4:38:5F:A6"
+      ]
+    }
+  }
+]
