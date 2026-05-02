@@ -20,6 +20,13 @@ jwt:
 price:
   admin: 1000
 
+file-storage:
+  upload-dir: uploads
+  max-file-size: 5242880 # 5MB
+  allowed-file-types:
+    - image/jpeg
+    - image/png
+
 midtrans:
   api-url: https://api.sandbox.midtrans.com/v2/
   snap-url: https://app.sandbox.midtrans.com/

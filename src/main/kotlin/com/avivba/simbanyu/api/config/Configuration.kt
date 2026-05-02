@@ -19,7 +19,8 @@ import org.springframework.web.client.RestClient
 @EnableConfigurationProperties(
     JwtProperties::class,
     PriceProperties::class,
-    MidtransProperties::class
+    MidtransProperties::class,
+    FileStorageProperties::class,
 )
 class Configuration {
     //TODO: Handle exceptions
