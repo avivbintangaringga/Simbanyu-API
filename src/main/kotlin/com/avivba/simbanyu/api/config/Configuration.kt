@@ -13,11 +13,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.client.RestClient
 
 @Configuration
 @EnableConfigurationProperties(
     JwtProperties::class,
-    PriceProperties::class
+    PriceProperties::class,
+    MidtransProperties::class
 )
 class Configuration {
     //TODO: Handle exceptions
