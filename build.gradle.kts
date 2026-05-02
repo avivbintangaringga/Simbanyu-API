@@ -32,6 +32,7 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
 	implementation("com.github.f4b6a3:ulid-creator:5.2.4")
+	implementation("org.apache.tika:tika-core:3.3.0")
 
 	runtimeOnly("org.postgresql:postgresql")
 
