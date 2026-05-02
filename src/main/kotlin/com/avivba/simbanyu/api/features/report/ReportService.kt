@@ -1,6 +1,10 @@
 package com.avivba.simbanyu.api.features.report
 
 import com.avivba.simbanyu.api.features.notification.NotificationService
+import com.avivba.simbanyu.api.features.report.model.AddReportRequest
+import com.avivba.simbanyu.api.features.report.model.HandlingRequest
+import com.avivba.simbanyu.api.features.report.model.Report
+import com.avivba.simbanyu.api.features.report.model.ReportStatus
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import org.springframework.stereotype.Service
 import java.util.UUID

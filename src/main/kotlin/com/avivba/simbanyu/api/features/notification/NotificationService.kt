@@ -1,9 +1,8 @@
 package com.avivba.simbanyu.api.features.notification
 
-import com.avivba.simbanyu.api.features.fcm.FcmTokenRepository
 import com.avivba.simbanyu.api.features.fcm.FcmTokenService
-import com.avivba.simbanyu.api.features.user.User
-import org.springframework.security.core.userdetails.UserDetails
+import com.avivba.simbanyu.api.features.notification.model.Notification
+import com.avivba.simbanyu.api.features.user.model.User
 import org.springframework.stereotype.Service
 
 @Service

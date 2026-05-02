@@ -1,6 +1,9 @@
 package com.avivba.simbanyu.api.features.report
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.report.model.AddReportRequest
+import com.avivba.simbanyu.api.features.report.model.HandlingRequest
+import com.avivba.simbanyu.api.features.report.model.ReportDto
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.utils.hasRole
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController

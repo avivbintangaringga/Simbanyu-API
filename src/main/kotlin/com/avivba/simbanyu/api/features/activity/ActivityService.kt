@@ -1,14 +1,10 @@
 package com.avivba.simbanyu.api.features.activity
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.activity.model.Activity
+import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.UserRepository
-import com.avivba.simbanyu.api.features.user.UserRole
-import org.springframework.http.HttpStatus
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
+import com.avivba.simbanyu.api.features.user.model.UserRole
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class ActivityService(

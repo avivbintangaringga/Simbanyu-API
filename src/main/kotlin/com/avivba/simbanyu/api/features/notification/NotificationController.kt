@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.notification
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.notification.model.NotificationDto
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails

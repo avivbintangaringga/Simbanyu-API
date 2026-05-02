@@ -2,7 +2,7 @@ package com.avivba.simbanyu.api.features.midtrans
 
 import com.avivba.simbanyu.api.base.ApiResponse
 import com.avivba.simbanyu.api.features.bill.BillRepository
-import com.avivba.simbanyu.api.features.bill.BillStatus
+import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.midtrans.model.PaymentCallbackRequest
 import com.avivba.simbanyu.api.features.midtrans.model.RequestPaymentRequest
 import com.avivba.simbanyu.api.features.midtrans.model.RequestPaymentResponse
@@ -10,7 +10,6 @@ import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 

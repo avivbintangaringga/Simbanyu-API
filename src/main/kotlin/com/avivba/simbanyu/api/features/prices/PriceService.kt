@@ -1,10 +1,9 @@
 package com.avivba.simbanyu.api.features.prices
 
 import com.avivba.simbanyu.api.features.plans.PlanRepository
+import com.avivba.simbanyu.api.features.prices.model.Price
+import com.avivba.simbanyu.api.features.prices.model.PriceRequest
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
 import java.util.UUID
 
 @Service

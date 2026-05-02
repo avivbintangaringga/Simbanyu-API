@@ -1,9 +1,12 @@
 package com.avivba.simbanyu.api.features.subscriber
 
 import com.avivba.simbanyu.api.features.plans.PlanRepository
-import com.avivba.simbanyu.api.features.usage.UsageRepository
+import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
+import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
+import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
+import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
 import com.avivba.simbanyu.api.features.usage.UsageService
-import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder

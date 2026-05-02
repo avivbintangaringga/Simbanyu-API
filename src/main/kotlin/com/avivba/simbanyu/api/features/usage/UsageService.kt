@@ -4,7 +4,9 @@ import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.bill.BillService
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
-import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.usage.model.Usage
+import com.avivba.simbanyu.api.features.usage.model.UsageRequest
+import com.avivba.simbanyu.api.features.user.model.User
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.UUID

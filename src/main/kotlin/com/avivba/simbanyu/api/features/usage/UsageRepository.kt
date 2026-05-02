@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.usage
 
-import com.avivba.simbanyu.api.features.subscriber.Subscriber
+import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
+import com.avivba.simbanyu.api.features.usage.model.Usage
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.UUID

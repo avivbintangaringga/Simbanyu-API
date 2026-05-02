@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.auth
 
-import com.avivba.simbanyu.api.features.user.User
+import com.avivba.simbanyu.api.features.auth.model.RefreshToken
+import com.avivba.simbanyu.api.features.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface RefreshTokenRepository : JpaRepository<RefreshToken, String> {

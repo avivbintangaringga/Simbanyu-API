@@ -1,14 +1,13 @@
 package com.avivba.simbanyu.api.features.bill
 
 import com.avivba.simbanyu.api.config.PriceProperties
+import com.avivba.simbanyu.api.features.bill.model.Bill
+import com.avivba.simbanyu.api.features.bill.model.BillItem
+import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.notification.NotificationService
-import com.avivba.simbanyu.api.features.plans.Plan
-import com.avivba.simbanyu.api.features.plans.PlanRepository
-import com.avivba.simbanyu.api.features.subscriber.Subscriber
-import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
-import com.avivba.simbanyu.api.features.usage.Usage
-import com.avivba.simbanyu.api.features.usage.UsageRepository
-import com.avivba.simbanyu.api.features.usage.UsageService
+import com.avivba.simbanyu.api.features.plans.model.Plan
+import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
+import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.utils.getMonthName
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service

@@ -1,10 +1,9 @@
 package com.avivba.simbanyu.api.features.midtrans
 
 import com.avivba.simbanyu.api.config.MidtransProperties
-import com.avivba.simbanyu.api.features.bill.Bill
+import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.BillRepository
-import com.avivba.simbanyu.api.features.bill.BillService
-import com.avivba.simbanyu.api.features.bill.BillStatus
+import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.midtrans.model.Callback
 import com.avivba.simbanyu.api.features.midtrans.model.CustomerDetails
 import com.avivba.simbanyu.api.features.midtrans.model.ItemDetails

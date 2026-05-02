@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.fcm
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.fcm.model.FcmTokenRequest
 import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails

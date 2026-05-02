@@ -1,5 +1,7 @@
 package com.avivba.simbanyu.api.features.auth
 
+import com.avivba.simbanyu.api.features.auth.model.LoginRequest
+import com.avivba.simbanyu.api.features.auth.model.RefreshTokenRequest
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

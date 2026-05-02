@@ -1,5 +1,7 @@
 package com.avivba.simbanyu.api.features.plans
 
+import com.avivba.simbanyu.api.features.plans.model.Plan
+import com.avivba.simbanyu.api.features.plans.model.PlanRequest
 import org.springframework.stereotype.Service
 import java.util.UUID
 

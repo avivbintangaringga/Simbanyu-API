@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.midtrans
 
-import com.avivba.simbanyu.api.features.bill.Bill
+import com.avivba.simbanyu.api.features.bill.model.Bill
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

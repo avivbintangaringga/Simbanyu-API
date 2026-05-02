@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.bill
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.bill.model.BillDto
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.utils.hasRole
 import org.springframework.security.access.prepost.PreAuthorize

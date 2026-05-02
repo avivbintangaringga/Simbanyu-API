@@ -1,6 +1,8 @@
 package com.avivba.simbanyu.api.features.prices
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.features.prices.model.PriceDto
+import com.avivba.simbanyu.api.features.prices.model.PriceRequest
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

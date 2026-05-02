@@ -1,5 +1,9 @@
 package com.avivba.simbanyu.api.features.user
 
+import com.avivba.simbanyu.api.features.user.model.AddUserRequest
+import com.avivba.simbanyu.api.features.user.model.UpdateUserRequest
+import com.avivba.simbanyu.api.features.user.model.User
+import com.avivba.simbanyu.api.features.user.model.UserRole
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID
