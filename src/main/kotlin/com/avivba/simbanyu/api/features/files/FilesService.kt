@@ -4,6 +4,7 @@ import com.avivba.simbanyu.api.config.FileStorageProperties
 import com.avivba.simbanyu.api.utils.detectContentType
 import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.util.Base64
 import java.util.UUID
@@ -30,6 +31,39 @@ class FilesService(
 
     fun getFileUrl(id: String): String {
         return "/files/${id}"
+    }
+
+    fun saveMultipart(file: MultipartFile): String {
+        if (file.isEmpty) {
+            throw RuntimeException("File is empty")
+        }
+
+        if (file.size > storageProps.maxFileSize) {
+            throw RuntimeException("File size exceeds the limit")
+        }
+
+        val id = UUID.randomUUID().toString()
+        val targetFile = File(storageProps.uploadDir, id)
+
+        targetFile.parentFile.mkdirs()
+
+        file.inputStream.use { input ->
+            val header = input.readNBytes(512)
+
+            if (!storageProps
+                    .allowedFileTypes
+                    .contains(detectContentType(header))
+            ) {
+                throw RuntimeException("File type not allowed")
+            }
+
+            targetFile.outputStream().use { output ->
+                output.write(header)
+                input.copyTo(output)
+            }
+        }
+
+        return id
     }
 
     fun saveBase64(base64: String): String {
