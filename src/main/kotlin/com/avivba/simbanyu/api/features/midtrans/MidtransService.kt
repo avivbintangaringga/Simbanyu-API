@@ -125,8 +125,6 @@ class MidtransService(
             "${it.createdAt.getMonthName()} ${it.createdAt.getYear()}"
         }.distinct().joinToString(", ")
 
-
-        // TODO: Update bill status
         when (data.transactionStatus) {
             "pending" -> {
                 // Do nothing for now
