@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/reports")
 class ReportController(
     private val reportService: ReportService,
-    private val userRepository: UserRepository,
     private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
@@ -55,8 +56,9 @@ class ReportController(
     @PostMapping
     @PreAuthorize("hasRole('SUBSCRIBER')")
     fun createReport(
-        @Valid @RequestBody data: AddReportRequest,
-        @AuthenticationPrincipal userDetails: UserDetails
+        @AuthenticationPrincipal userDetails: UserDetails,
+        @Valid @RequestPart("data") data: AddReportRequest,
+        @RequestPart("image") image: MultipartFile
     ): ApiResponse<ReportDto> {
         val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
         if (subscriber.isEmpty()) {
@@ -65,7 +67,8 @@ class ReportController(
 
         return reportService.addReport(
             subscriberId = subscriber[0].id.toString(),
-            data = data
+            data = data,
+            image = image
         ).let {
             ApiResponse.success(ReportDto.fromEntity(it))
         }
@@ -74,12 +77,14 @@ class ReportController(
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     fun handleReport(
-        @Valid @RequestBody data: HandlingRequest,
-        @PathVariable id: String
+        @PathVariable id: String,
+        @Valid @RequestPart("data") data: HandlingRequest,
+        @RequestPart("image") image: MultipartFile
     ): ApiResponse<ReportDto> {
         return reportService.handleReport(
             id = id,
-            data = data
+            data = data,
+            image = image
         ).let {
             ApiResponse.success(ReportDto.fromEntity(it))
         }

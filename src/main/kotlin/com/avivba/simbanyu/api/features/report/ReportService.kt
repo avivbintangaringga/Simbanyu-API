@@ -6,14 +6,18 @@ import com.avivba.simbanyu.api.features.report.model.HandlingRequest
 import com.avivba.simbanyu.api.features.report.model.Report
 import com.avivba.simbanyu.api.features.report.model.ReportStatus
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
+import com.avivba.simbanyu.api.features.upload.UploadService
+import com.avivba.simbanyu.api.features.upload.model.Upload
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @Service
 class ReportService(
     private val reportRepository: ReportRepository,
     private val subscriberRepository: SubscriberRepository,
-    private val notificationsService: NotificationService
+    private val notificationsService: NotificationService,
+    private val uploadService: UploadService,
 ) {
     fun getAllReports(): List<Report> = reportRepository.findAll()
 
@@ -29,17 +33,17 @@ class ReportService(
 
     fun addReport(
         subscriberId: String,
-        data: AddReportRequest
+        data: AddReportRequest,
+        image: MultipartFile
     ): Report {
         val subscriber = subscriberRepository.findById(UUID.fromString(subscriberId)).orElseThrow()
-        // TODO: Store image and get URL
-        val imageUrl = ""
+        val image = uploadService.saveMultipart(image)
         val report = Report(
             address = data.address,
             longitude = data.longitude,
             latitude = data.latitude,
             description = data.description,
-            evidenceImageUrl = imageUrl,
+            evidenceImage = image,
             subscriber = subscriber
         )
 
@@ -54,13 +58,13 @@ class ReportService(
 
     fun handleReport(
         id: String,
-        data: HandlingRequest
+        data: HandlingRequest,
+        image: MultipartFile,
     ): Report {
         val report = reportRepository.findById(UUID.fromString(id)).orElseThrow()
+        val image = uploadService.saveMultipart(image)
 
-        // TODO: Store image and get URL
-        val imageUrl = ""
-        report.handlingEvidenceImageUrl = imageUrl
+        report.handlingEvidenceImage = image
         report.status = data.status
         report.operatorNotes = data.operatorNotes
 

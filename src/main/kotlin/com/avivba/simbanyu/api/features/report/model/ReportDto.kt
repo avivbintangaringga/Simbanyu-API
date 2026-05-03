@@ -5,9 +5,9 @@ data class ReportDto(
     val address: String,
     val description: String,
     val status: String,
-    val evidenceImageURL: String,
+    val evidenceImageUrl: String,
     val operatorNotes: String? = null,
-    val handlingEvidenceImageURL: String? = null,
+    val handlingEvidenceImageUrl: String? = null,
     val createdAt: String,
     val updatedAt: String,
 ) {
@@ -17,9 +17,9 @@ data class ReportDto(
             address = report.address,
             description = report.description,
             status = report.status.name,
-            evidenceImageURL = report.evidenceImageUrl,
+            evidenceImageUrl = report.evidenceImage.url,
             operatorNotes = report.operatorNotes,
-            handlingEvidenceImageURL = report.handlingEvidenceImageUrl,
+            handlingEvidenceImageUrl = report.handlingEvidenceImage?.url,
             createdAt = report.createdAt.toString(),
             updatedAt = report.updatedAt.toString(),
         )

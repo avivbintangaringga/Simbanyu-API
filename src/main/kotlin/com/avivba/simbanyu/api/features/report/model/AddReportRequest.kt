@@ -9,9 +9,6 @@ data class AddReportRequest(
     @NotBlank
     val description: String,
 
-    @NotBlank
-    val evidenceImage: String,
-
     val latitude: Double? = null,
     val longitude: Double? = null,
 )

@@ -6,7 +6,5 @@ data class HandlingRequest(
     @NotBlank
     val status: ReportStatus,
 
-    val handingEvidenceImage: String? = null,
-
     val operatorNotes: String? = null,
 )
