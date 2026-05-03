@@ -49,7 +49,7 @@ class UserController(
     @PreAuthorize("hasRole('ADMIN')")
     fun addUser(
         @Valid @RequestPart("data") data: AddUserRequest,
-        @RequestPart("photoImage") image: MultipartFile? = null
+        @RequestPart("image") image: MultipartFile? = null
     ): ApiResponse<UserDto> {
         return userService.addUser(
             data = data,
@@ -63,7 +63,7 @@ class UserController(
     fun updateUser(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: UpdateUserRequest,
-        @RequestPart("photoImage") image: MultipartFile? = null
+        @RequestPart("image") image: MultipartFile? = null
     ): ApiResponse<UserDto> {
         return userService.updateUser(
             id = id,
