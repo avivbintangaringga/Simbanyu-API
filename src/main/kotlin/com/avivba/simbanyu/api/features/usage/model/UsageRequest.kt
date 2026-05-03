@@ -10,8 +10,5 @@ data class UsageRequest(
     @Min(1)
     val currentMeter: Int,
 
-    @NotBlank
-    val evidenceImage: String,
-
     val operatorNotes: String? = null,
 )

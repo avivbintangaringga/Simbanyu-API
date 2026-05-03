@@ -77,15 +77,13 @@ class BillService(
         val usageAmount = usage.meterEnd - usage.meterStart
         val tieredCost = calculateTieredCost(plan, usageAmount)
 
-        billItemRepository.deleteAll(bill.billItems)
-
+        bill.billItems.clear()
         val items = createBillItems(plan, usageAmount, tieredCost, bill)
-        val billItems = billItemRepository.saveAll(items)
-        val totalCost = billItems.sumOf { it.amount }
+        bill.billItems.addAll(items)
 
-        // Update
+        val totalCost = bill.billItems.sumOf { it.amount }
+
         bill.amount = totalCost
-        bill.billItems = billItems
         bill.usage = usage
 
         return billRepository.save(bill)

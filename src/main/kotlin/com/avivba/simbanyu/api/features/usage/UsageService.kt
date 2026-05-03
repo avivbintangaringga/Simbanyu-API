@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.usage
 
 import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.bill.BillService
+import com.avivba.simbanyu.api.features.upload.UploadService
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.Usage
@@ -9,6 +10,7 @@ import com.avivba.simbanyu.api.features.usage.model.UsageRequest
 import com.avivba.simbanyu.api.features.user.model.User
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @Service
@@ -18,6 +20,7 @@ class UsageService(
     private val billService: BillService,
     private val notificationService: NotificationService,
     private val activityService: ActivityService,
+    private val uploadService: UploadService
 ) {
     fun getAllUsage(): List<Usage> = usageRepository.findAll()
     fun getUsageBySubscriberId(
@@ -47,7 +50,7 @@ class UsageService(
             meterStart = currentMeter,
             meterEnd = currentMeter,
             isInitial = true,
-            evidenceImageUrl = "https://example.com/image.jpg",
+            evidenceImage = null,
             operatorNotes = null,
             subscriber = subscriber,
             bill = null,
@@ -59,6 +62,7 @@ class UsageService(
     @Transactional
     fun recordUsage(
         data: UsageRequest,
+        image: MultipartFile,
         user: User
     ): Usage {
         val subscriber = subscriberRepository.findById(UUID.fromString(data.subscriberId)).orElseThrow()
@@ -70,13 +74,13 @@ class UsageService(
         }
 
         // TODO: Check if current month is already recorded
-        // TODO: Store image and get URL
-        val imageUrl = ""
+
+        val upload = uploadService.saveMultipart(image)
 
         val usage = Usage(
             meterStart = previousUsage.meterEnd,
             meterEnd = data.currentMeter,
-            evidenceImageUrl = imageUrl,
+            evidenceImage = upload,
             operatorNotes = data.operatorNotes,
             subscriber = subscriber
         )
@@ -110,6 +114,7 @@ class UsageService(
     fun updateUsage(
         id: String,
         data: UsageRequest,
+        image: MultipartFile?,
         user: User,
     ): Usage {
         val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()
@@ -118,11 +123,14 @@ class UsageService(
             throw IllegalStateException("Current meter must be greater than previous meter")
         }
 
-        // TODO: Store image and get URL
-        val imageUrl = ""
+        if (image != null) {
+            if (usage.evidenceImage != null) {
+                uploadService.deleteFile(usage.evidenceImage!!)
+            }
+            usage.evidenceImage = uploadService.saveMultipart(image)
+        }
 
         usage.meterEnd = data.currentMeter
-        usage.evidenceImageUrl = imageUrl
         usage.operatorNotes = data.operatorNotes
 
         val bill = usage.bill ?: throw IllegalStateException("Usage doesn't have a bill associated")

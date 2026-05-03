@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.usage.model
 
 import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
+import com.avivba.simbanyu.api.features.upload.model.Upload
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -35,8 +36,12 @@ class Usage(
     @Column(nullable = false)
     var isInitial: Boolean = false,
 
-    @Column(nullable = false)
-    var evidenceImageUrl: String,
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var evidenceImage: Upload? = null,
 
     @Column(nullable = true)
     var operatorNotes: String? = null,
