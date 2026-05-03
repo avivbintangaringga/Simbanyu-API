@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface UsageRepository : JpaRepository<Usage, UUID> {
-    @Query("SELECT u FROM Usage u WHERE u.subscriber.id = :id ORDER BY u.createdAt DESC LIMIT :limit")
-    fun getUsageBySubscriberIdWithLimit(id: UUID, limit: Int): List<Usage>
+    @Query("SELECT u FROM Usage u WHERE u.subscriber.id = :id AND u.isInitial = :isInitial ORDER BY u.createdAt DESC LIMIT :limit")
+    fun findUsageBySubscriberIdAndIsInitialOrderByCreatedAtDescWithLimit(id: UUID, isInitial: Boolean, limit: Int): List<Usage>
 
     fun findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
         subscriberId: UUID,

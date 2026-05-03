@@ -28,13 +28,14 @@ class UsageService(
         limit: Int? = null,
     ): List<Usage> {
         return if (limit != null) {
-            usageRepository.getUsageBySubscriberIdWithLimit(
-                UUID.fromString(subscriberId),
-                limit
+            usageRepository.findUsageBySubscriberIdAndIsInitialOrderByCreatedAtDescWithLimit(
+                id = UUID.fromString(subscriberId),
+                isInitial = false,
+                limit = limit
             )
         } else {
             usageRepository.findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
-                UUID.fromString(subscriberId),
+                subscriberId = UUID.fromString(subscriberId),
                 isInitial = false
             )
         }
