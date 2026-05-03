@@ -23,8 +23,6 @@ import org.springframework.web.client.RestClient
     FileStorageProperties::class,
 )
 class Configuration {
-    //TODO: Handle exceptions
-
     @Bean
     fun userDetailsService(
         userRepository: UserRepository,

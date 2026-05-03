@@ -29,6 +29,7 @@ class UserController(
         return userService.getAllUsers()
             .let {
                 ApiResponse.success(
+                    "Users retrieved successfully.",
                     it.map { user ->
                         UserDto.fromEntity(user)
                     }
@@ -42,7 +43,12 @@ class UserController(
         @PathVariable id: String
     ): ApiResponse<UserDto> {
         return userService.getUserById(id)
-            .let { ApiResponse.success(UserDto.fromEntity(it)) }
+            .let {
+                ApiResponse.success(
+                    "User retrieved successfully.",
+                    UserDto.fromEntity(it)
+                )
+            }
     }
 
     @PostMapping
@@ -55,7 +61,12 @@ class UserController(
             data = data,
             image = image
         )
-            .let { ApiResponse.success(UserDto.fromEntity(it)) }
+            .let {
+                ApiResponse.success(
+                    "User created successfully.",
+                    UserDto.fromEntity(it)
+                )
+            }
     }
 
     @PutMapping("/{id}")
@@ -70,7 +81,12 @@ class UserController(
             data = data,
             image = image
         )
-            .let { ApiResponse.success(UserDto.fromEntity(it)) }
+            .let {
+                ApiResponse.success(
+                    "User updated successfully.",
+                    UserDto.fromEntity(it)
+                )
+            }
     }
 
     @DeleteMapping("/{id}")
@@ -79,6 +95,9 @@ class UserController(
         @PathVariable id: String
     ): ApiResponse<Unit> {
         userService.deleteUser(id)
-        return ApiResponse.success(Unit)
+        return ApiResponse.success(
+            "User deleted successfully.",
+            Unit
+        )
     }
 }

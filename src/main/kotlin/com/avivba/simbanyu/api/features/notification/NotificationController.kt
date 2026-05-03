@@ -23,6 +23,7 @@ class NotificationController(
         return notificationService.getUserNotifications(user)
             .let {
                 ApiResponse.success(
+                    "Notifications retrieved successfully.",
                     it.map { notification ->
                         NotificationDto.fromEntity(notification)
                     }

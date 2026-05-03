@@ -38,7 +38,7 @@ class ReportController(
 
         return (if (isAdmin || isOperator) {
             reportService.getAllReports()
-        } else  {
+        } else {
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             if (subscriber.isNotEmpty()) {
                 reportService.getReportBySubscriberId(subscriberId = subscriber[0].id.toString())
@@ -47,6 +47,7 @@ class ReportController(
             }
         }).let {
             ApiResponse.success(
+                "Reports retrieved successfully.",
                 it.map {
                     ReportDto.fromEntity(it)
                 })
@@ -70,7 +71,10 @@ class ReportController(
             data = data,
             image = image
         ).let {
-            ApiResponse.success(ReportDto.fromEntity(it))
+            ApiResponse.success(
+                "Report created successfully.",
+                ReportDto.fromEntity(it)
+            )
         }
     }
 
@@ -86,7 +90,10 @@ class ReportController(
             data = data,
             image = image
         ).let {
-            ApiResponse.success(ReportDto.fromEntity(it))
+            ApiResponse.success(
+                "Report handled successfully.",
+                ReportDto.fromEntity(it)
+            )
         }
     }
 
@@ -96,6 +103,9 @@ class ReportController(
         @PathVariable id: String
     ): ApiResponse<Unit> {
         reportService.deleteReport(id)
-        return ApiResponse.success(Unit)
+        return ApiResponse.success(
+            "Report deleted successfully.",
+            Unit
+        )
     }
 }

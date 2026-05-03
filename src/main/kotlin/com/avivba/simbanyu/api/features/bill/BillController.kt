@@ -30,7 +30,12 @@ class BillController(
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             billService.getBillsBySubscriberId(subscriber[0].id.toString())
         }).map { BillDto.fromEntity(it) }
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(
+                    "Bills retrieved successfully.",
+                    it
+                )
+            }
     }
 
     @GetMapping("/{id}")
@@ -40,6 +45,11 @@ class BillController(
     ): ApiResponse<BillDto> {
         return billService.getBillById(id).let {
             BillDto.fromEntity(it)
-        }.let { ApiResponse.success(it) }
+        }.let {
+            ApiResponse.success(
+                "Bill retrieved successfully.",
+                it
+            )
+        }
     }
 }

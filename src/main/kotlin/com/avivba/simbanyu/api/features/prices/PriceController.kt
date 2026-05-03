@@ -23,7 +23,12 @@ class PriceController(
     ): ApiResponse<List<PriceDto>> {
         return priceService.getAllPricesOfAPlan(planId)
             .map { PriceDto.fromEntity(it) }
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(
+                    "Prices retrieved successfully.",
+                    it
+                )
+            }
     }
 
     @PostMapping("/{planId}/prices")
@@ -32,7 +37,12 @@ class PriceController(
         @Valid @RequestBody body: PriceRequest
     ): ApiResponse<PriceDto> {
         return priceService.addPrice(planId, body)
-            .let { ApiResponse.success(PriceDto.fromEntity(it)) }
+            .let {
+                ApiResponse.success(
+                    "Price created successfully.",
+                    PriceDto.fromEntity(it)
+                )
+            }
     }
 
     @DeleteMapping("/{planId}/prices/{id}")
@@ -41,6 +51,11 @@ class PriceController(
         @PathVariable planId: String
     ): ApiResponse<Unit> {
         return priceService.deletePrice(id)
-            .let { ApiResponse.success(Unit) }
+            .let {
+                ApiResponse.success(
+                    "Price deleted successfully.",
+                    Unit
+                )
+            }
     }
 }

@@ -59,7 +59,12 @@ class UsageController(
             )
         })
             .map { UsageDto.fromEntity(it) }
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(
+                    "Usage retrieved successfully.",
+                    it
+                )
+            }
     }
 
     @PostMapping(
@@ -77,7 +82,10 @@ class UsageController(
             image = image,
             user = user
         ).let {
-            ApiResponse.success(UsageDto.fromEntity(it))
+            ApiResponse.success(
+                "Usage recorded successfully.",
+                UsageDto.fromEntity(it)
+            )
         }
     }
 
@@ -94,8 +102,12 @@ class UsageController(
             id = id,
             data = data,
             image = image,
-            user = user).let {
-            ApiResponse.success(UsageDto.fromEntity(it))
+            user = user
+        ).let {
+            ApiResponse.success(
+                "Usage updated successfully.",
+                UsageDto.fromEntity(it)
+            )
         }
     }
 
@@ -105,7 +117,10 @@ class UsageController(
         @PathVariable id: String,
     ): ApiResponse<Unit> {
         return usageService.deleteUsage(id).let {
-            ApiResponse.success(Unit)
+            ApiResponse.success(
+                "Usage deleted successfully.",
+                Unit
+            )
         }
     }
 }

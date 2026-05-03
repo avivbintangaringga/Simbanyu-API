@@ -24,7 +24,10 @@ class MidtransController(
         @RequestBody body: PaymentCallbackRequest
     ): ApiResponse<Unit> {
         midtransService.handleCallback(body)
-        return ApiResponse.success(Unit)
+        return ApiResponse.success(
+            "Payment callback received successfully.",
+            Unit
+        )
     }
 
     @PostMapping
@@ -50,6 +53,7 @@ class MidtransController(
         )
 
         return ApiResponse.success(
+            "Payment request initiated successfully.",
             RequestPaymentResponse(paymentUrl)
         )
     }

@@ -25,7 +25,10 @@ class SubscriberController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     fun getAllSubscribers(): ApiResponse<List<SubscriberDto>> {
         return subscriberService.getAllSubscribers().let {
-            ApiResponse.success(it)
+            ApiResponse.success(
+                "Subscribers retrieved successfully.",
+                it
+            )
         }
     }
 
@@ -35,7 +38,10 @@ class SubscriberController(
         @PathVariable id: String
     ): ApiResponse<SubscriberDto> {
         return subscriberService.getSubscriberById(id).let {
-            ApiResponse.success(it)
+            ApiResponse.success(
+                "Subscriber retrieved successfully.",
+                it
+            )
         }
     }
 
@@ -44,7 +50,10 @@ class SubscriberController(
         @Valid @RequestBody body: AddSubscriberRequest
     ): ApiResponse<SubscriberDto> {
         return subscriberService.addSubscriber(body).let {
-            ApiResponse.success(SubscriberDto.fromEntity(it))
+            ApiResponse.success(
+                "Subscriber created successfully.",
+                SubscriberDto.fromEntity(it)
+            )
         }
     }
 
@@ -54,7 +63,10 @@ class SubscriberController(
         @Valid @RequestBody body: UpdateSubscriberRequest
     ): ApiResponse<SubscriberDto> {
         return subscriberService.updateSubscriber(id, body).let {
-            ApiResponse.success(SubscriberDto.fromEntity(it))
+            ApiResponse.success(
+                "Subscriber updated successfully.",
+                SubscriberDto.fromEntity(it)
+            )
         }
     }
 
@@ -62,6 +74,9 @@ class SubscriberController(
     fun deleteSubscriber(
         @PathVariable id: String
     ) = subscriberService.deleteSubscriberById(id).let {
-        ApiResponse.success(it)
+        ApiResponse.success(
+            "Subscriber deleted successfully.",
+            it
+        )
     }
 }

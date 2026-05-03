@@ -93,16 +93,21 @@ class SubscriberService(
     }
 
     private fun rowToDto(row: Array<Any?>, currentMonth: YearMonth): SubscriberDto {
-        val subscriber = row[0] as Subscriber
-        val lastRecordedAt = row[1] as Instant?
-        val isRecorded = lastRecordedAt?.let {
-            currentMonth == YearMonth.from(it.atZone(ZoneId.systemDefault()))
-        } ?: false
+        if (row[0] is Subscriber && row[1] is Instant?) {
+            val subscriber = row[0] as Subscriber
+            val lastRecordedAt = row[1] as Instant?
 
-        return SubscriberDto.fromEntity(
-            subscriber,
-            isRecorded,
-            lastRecordedAt?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()).toString() }
-        )
+            val isRecorded = lastRecordedAt?.let {
+                currentMonth == YearMonth.from(it.atZone(ZoneId.systemDefault()))
+            } ?: false
+
+            return SubscriberDto.fromEntity(
+                subscriber,
+                isRecorded,
+                lastRecordedAt?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()).toString() }
+            )
+        } else {
+            throw Exception("Cannot find subscriber")
+        }
     }
 }

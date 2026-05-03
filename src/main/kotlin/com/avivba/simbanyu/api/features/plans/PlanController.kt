@@ -23,7 +23,10 @@ class PlanController(
         return planService.getAllPlans().map {
             PlanDto.fromEntity(it)
         }.let {
-            ApiResponse.success(it)
+            ApiResponse.success(
+                "Plans retrieved successfully.",
+                it
+            )
         }
     }
 
@@ -32,7 +35,10 @@ class PlanController(
         @PathVariable id: String
     ): ApiResponse<PlanDto> {
         return planService.getPlanById(id).let {
-            ApiResponse.success(PlanDto.fromEntity(it))
+            ApiResponse.success(
+                "Plan retrieved successfully.",
+                PlanDto.fromEntity(it)
+            )
         }
     }
 
@@ -41,7 +47,10 @@ class PlanController(
         @Valid @RequestBody body: PlanRequest
     ): ApiResponse<PlanDto> {
         return planService.addPlan(body).let {
-            ApiResponse.success(PlanDto.fromEntity(it))
+            ApiResponse.success(
+                "Plan created successfully.",
+                PlanDto.fromEntity(it)
+            )
         }
     }
 
@@ -51,7 +60,10 @@ class PlanController(
         @Valid @RequestBody body: PlanRequest
     ): ApiResponse<PlanDto> {
         return planService.updatePlan(id, body).let {
-            ApiResponse.success(PlanDto.fromEntity(it))
+            ApiResponse.success(
+                "Plan updated successfully.",
+                PlanDto.fromEntity(it)
+            )
         }
     }
 
@@ -60,7 +72,10 @@ class PlanController(
         @PathVariable id: String
     ): ApiResponse<Unit> {
         return planService.deletePlan(id).let {
-            ApiResponse.success(Unit)
+            ApiResponse.success(
+                "Plan deleted successfully.",
+                Unit
+            )
         }
     }
 }

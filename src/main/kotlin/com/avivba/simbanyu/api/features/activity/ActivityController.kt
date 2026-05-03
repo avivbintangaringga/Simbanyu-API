@@ -27,6 +27,7 @@ class ActivityController(
             user
         ).let {
             ApiResponse.success(
+                "Activities retrieved successfully.",
                 it.map { activity ->
                     ActivityDto.fromEntity(activity)
                 }

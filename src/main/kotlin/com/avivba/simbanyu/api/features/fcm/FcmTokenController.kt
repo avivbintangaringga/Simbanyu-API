@@ -24,7 +24,10 @@ class FcmTokenController(
             body.token,
             userDetails.username
         ).let {
-            ApiResponse.success(Unit)
+            ApiResponse.success(
+                "FCM token submitted successfully.",
+                Unit
+            )
         }
     }
 }

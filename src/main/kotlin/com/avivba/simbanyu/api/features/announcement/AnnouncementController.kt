@@ -23,9 +23,11 @@ class AnnouncementController(
     fun getAllAnnouncements(): ApiResponse<List<AnnouncementDto>> {
         return announcementService.getAllAnnouncements()
             .let {
-                ApiResponse.success(it.map { announcement ->
-                    AnnouncementDto.fromEntity(announcement)
-                })
+                ApiResponse.success(
+                    "Announcements retrieved successfully.",
+                    it.map { announcement ->
+                        AnnouncementDto.fromEntity(announcement)
+                    })
             }
     }
 
@@ -36,6 +38,7 @@ class AnnouncementController(
         announcementService.getAnnouncementById(id)
             .let {
                 ApiResponse.success(
+                    "Announcement retrieved successfully.",
                     AnnouncementDto.fromEntity(it)
                 )
             }
@@ -48,6 +51,7 @@ class AnnouncementController(
         announcementService.addAnnouncement(body)
             .let {
                 ApiResponse.success(
+                    "Announcement created successfully.",
                     AnnouncementDto.fromEntity(it)
                 )
             }
@@ -65,6 +69,7 @@ class AnnouncementController(
             )
             .let {
                 ApiResponse.success(
+                    "Announcement updated successfully.",
                     AnnouncementDto.fromEntity(it)
                 )
             }
@@ -73,5 +78,10 @@ class AnnouncementController(
     @DeleteMapping("/{id}")
     fun deleteAnnouncement(@PathVariable id: String): ApiResponse<Unit> =
         announcementService.deleteAnnouncementById(id)
-            .let { ApiResponse.success(it) }
+            .let {
+                ApiResponse.success(
+                    "Announcement deleted successfully.",
+                    it
+                )
+            }
 }
