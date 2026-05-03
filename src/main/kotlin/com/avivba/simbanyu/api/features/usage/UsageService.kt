@@ -22,7 +22,10 @@ class UsageService(
     private val activityService: ActivityService,
     private val uploadService: UploadService
 ) {
-    fun getAllUsage(): List<Usage> = usageRepository.findAll()
+    fun getAllUsage(): List<Usage> {
+        return usageRepository.findUsagesByIsInitialOrderByCreatedAtDesc(isInitial = false)
+    }
+
     fun getUsageBySubscriberId(
         subscriberId: String,
         limit: Int? = null,
