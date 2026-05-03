@@ -27,7 +27,8 @@ class SecurityConfiguration(
                 .requestMatchers(
                     "/api/auth/login",
                     "/api/auth/refresh",
-                    "/error"
+                    "/error",
+                    "/uploads/**", // TODO: Is this the best way to do this?
                 ).permitAll()
                 .anyRequest()
                 .fullyAuthenticated()
