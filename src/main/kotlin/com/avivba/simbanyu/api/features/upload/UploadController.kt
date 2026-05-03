@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.upload
 
 import org.springframework.core.io.Resource
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +18,10 @@ class UploadController(
         @PathVariable id: String
     ): ResponseEntity<Resource> {
         return  uploadService.getFile(id).let {
-            ResponseEntity.ok().body(it)
+            ResponseEntity
+                .ok()
+                .contentType(MediaType.valueOf(it.upload.contentType))
+                .body(it.resource)
         }
     }
 }

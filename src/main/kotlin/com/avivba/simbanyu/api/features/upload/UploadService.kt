@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.upload
 
 import com.avivba.simbanyu.api.config.FileStorageProperties
 import com.avivba.simbanyu.api.features.upload.model.Upload
+import com.avivba.simbanyu.api.features.upload.model.UploadResource
 import com.avivba.simbanyu.api.utils.detectContentType
 import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
@@ -17,18 +18,23 @@ class UploadService(
 ) {
     private val maxBase64Size = ((storageProps.maxFileSize + 2) / 3) * 4
 
-    fun getFile(id: String): FileSystemResource {
+    fun getFile(id: String): UploadResource {
         if (!validateFileId(id)) {
             throw RuntimeException("Invalid file ID")
         }
 
-        val file = File(storageProps.uploadDir, id)
+        val upload = uploadRepository.findById(UUID.fromString(id)).orElseThrow()
 
+        val file = File(storageProps.uploadDir, id)
         if (!file.exists()) {
             throw RuntimeException("File not found")
         }
+        val resource = FileSystemResource(file)
 
-        return FileSystemResource(file)
+        return UploadResource(
+            upload = upload,
+            resource = resource
+        )
     }
 
     fun saveMultipart(file: MultipartFile): Upload {
