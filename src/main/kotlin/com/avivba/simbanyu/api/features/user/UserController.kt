@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,9 +48,13 @@ class UserController(
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     fun addUser(
-        @Valid @RequestBody body: AddUserRequest
+        @Valid @RequestPart("data") data: AddUserRequest,
+        @RequestPart("photoImage") image: MultipartFile? = null
     ): ApiResponse<UserDto> {
-        return userService.addUser(body)
+        return userService.addUser(
+            data = data,
+            image = image
+        )
             .let { ApiResponse.success(UserDto.fromEntity(it)) }
     }
 
@@ -56,9 +62,14 @@ class UserController(
     @PreAuthorize("hasRole('ADMIN')")
     fun updateUser(
         @PathVariable id: String,
-        @Valid @RequestBody body: UpdateUserRequest
+        @Valid @RequestPart("data") data: UpdateUserRequest,
+        @RequestPart("photoImage") image: MultipartFile? = null
     ): ApiResponse<UserDto> {
-        return userService.updateUser(id, body)
+        return userService.updateUser(
+            id = id,
+            data = data,
+            image = image
+        )
             .let { ApiResponse.success(UserDto.fromEntity(it)) }
     }
 

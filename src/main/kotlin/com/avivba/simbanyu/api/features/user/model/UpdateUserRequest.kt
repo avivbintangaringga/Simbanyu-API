@@ -12,7 +12,4 @@ data class UpdateUserRequest(
 
     @NotBlank
     val phoneNumber: String? = null,
-
-    @URL
-    val photoImageURL: String? = null,
 )

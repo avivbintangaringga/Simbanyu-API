@@ -6,7 +6,7 @@ data class UserDto(
     val name: String,
     val role: String,
     val phoneNumber: String,
-    val photoImageURL: String? = null,
+    val photoImageUrl: String? = null,
     val createdAt: String,
     val updatedAt: String,
 ) {
@@ -17,7 +17,7 @@ data class UserDto(
             name = user.name,
             role = user.role.name,
             phoneNumber = user.phoneNumber,
-            photoImageURL = user.photoImageURL,
+            photoImageUrl = user.photoImage?.url,
             createdAt = user.createdAt.toString(),
             updatedAt = user.updatedAt.toString(),
         )

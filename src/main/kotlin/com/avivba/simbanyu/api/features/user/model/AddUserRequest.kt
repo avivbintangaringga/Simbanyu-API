@@ -17,9 +17,6 @@ data class AddUserRequest(
     @NotBlank
     val phoneNumber: String,
 
-    @URL
-    val photoImageURL: String? = null,
-
     @NotBlank
     @Pattern(regexp = "(SUBSCRIBER|OPERATOR|ADMIN)")
     val role: String = UserRole.SUBSCRIBER.name,

@@ -4,6 +4,7 @@ import com.avivba.simbanyu.api.features.activity.model.Activity
 import com.avivba.simbanyu.api.features.fcm.model.FcmToken
 import com.avivba.simbanyu.api.features.notification.model.Notification
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
+import com.avivba.simbanyu.api.features.upload.model.Upload
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -42,8 +43,12 @@ class User(
     @Column(nullable = false, unique = true)
     var phoneNumber: String = "",
 
-    @Column(nullable = true)
-    var photoImageURL: String? = null,
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var photoImage: Upload? = null,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

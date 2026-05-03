@@ -21,7 +21,6 @@ class Seed(
                     name = "Admin",
                     role = UserRole.ADMIN,
                     phoneNumber = "08123456789",
-                    photoImageURL = "https://example.com/photo.jpg"
                 )
             )
 
@@ -32,7 +31,6 @@ class Seed(
                     name = "Operator",
                     role = UserRole.OPERATOR,
                     phoneNumber = "08111111111",
-                    photoImageURL = "https://example.com/photo.jpg"
                 )
             )
 
@@ -43,7 +41,6 @@ class Seed(
                     name = "User",
                     role = UserRole.SUBSCRIBER,
                     phoneNumber = "0822222222",
-                    photoImageURL = "https://example.com/photo.jpg"
                 )
             )
         }
