@@ -34,6 +34,8 @@ dependencies {
 	implementation("com.github.f4b6a3:ulid-creator:5.2.4")
 	implementation("org.apache.tika:tika-core:3.3.0")
 
+	implementation("com.google.firebase:firebase-admin:9.8.0")
+
 	runtimeOnly("org.postgresql:postgresql")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")

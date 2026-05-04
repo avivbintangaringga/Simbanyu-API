@@ -31,3 +31,6 @@ midtrans:
   api-url: https://api.sandbox.midtrans.com/v2/
   snap-url: https://app.sandbox.midtrans.com/
   server-key: ${MIDTRANS_SERVER_KEY}
+
+firebase:
+  service-account: ${FIREBASE_SERVICE_ACCOUNT}
