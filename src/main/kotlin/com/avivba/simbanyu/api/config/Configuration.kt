@@ -10,6 +10,7 @@ import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -27,28 +28,15 @@ import org.springframework.security.crypto.password.PasswordEncoder
 )
 class Configuration {
     @Bean
-    fun userDetailsService(
-        userRepository: UserRepository,
-        subscriberRepository: SubscriberRepository
-    ): UserDetailsService = CustomUserDetailsService(
-        userRepository,
-        subscriberRepository
-    )
-
-    @Bean
     fun encoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun authenticationProvider(
-        userRepository: UserRepository,
-        subscriberRepository: SubscriberRepository
-    ): AuthenticationProvider = DaoAuthenticationProvider(
-        userDetailsService(
-            userRepository,
-            subscriberRepository
-        )
-    ).also {
-        it.setPasswordEncoder(encoder())
+        userDetailsService: CustomUserDetailsService
+    ): DaoAuthenticationProvider {
+        val authenticationProvider = DaoAuthenticationProvider(userDetailsService)
+        authenticationProvider.setPasswordEncoder(encoder())
+        return authenticationProvider
     }
 
     @Bean
