@@ -56,19 +56,14 @@ class ReportController(
     @PreAuthorize("hasRole('SUBSCRIBER')")
     @ResponseMessage("Report created successfully.")
     fun createReport(
-        @AuthenticationPrincipal userDetails: UserDetails,
         @Valid @RequestPart("data") data: AddReportRequest,
-        @RequestPart("image") image: MultipartFile
+        @RequestPart("image") image: MultipartFile,
+        authentication: Authentication,
     ): ReportDto {
-        val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
-        if (subscriber.isEmpty()) {
-            throw IllegalArgumentException("User is not a subscriber")
-        }
-
         return reportService.addReport(
-            subscriberId = subscriber[0].id.toString(),
             data = data,
-            image = image
+            image = image,
+            username = authentication.name
         ).let {
             ReportDto.fromEntity(it)
         }
@@ -80,12 +75,14 @@ class ReportController(
     fun handleReport(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: HandlingRequest,
-        @RequestPart("image") image: MultipartFile
+        @RequestPart("image") image: MultipartFile,
+        authentication: Authentication
     ): ReportDto {
         return reportService.handleReport(
             id = id,
             data = data,
-            image = image
+            image = image,
+            username = authentication.name
         ).let {
             ReportDto.fromEntity(it)
         }
@@ -95,8 +92,12 @@ class ReportController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("Report deleted successfully.")
     fun deleteReport(
-        @PathVariable id: String
+        @PathVariable id: String,
+        authentication: Authentication
     ) {
-        reportService.deleteReport(id)
+        reportService.deleteReport(
+            id = id,
+            username = authentication.name
+        )
     }
 }

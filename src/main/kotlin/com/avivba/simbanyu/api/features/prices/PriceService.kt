@@ -45,5 +45,8 @@ class PriceService(
         return priceRepository.save(price)
     }
 
-    fun deletePrice(id: String) = priceRepository.deleteById(UUID.fromString(id))
+    fun deletePrice(id: String) {
+        val price = priceRepository.findById(UUID.fromString(id)).orElseThrow()
+        priceRepository.delete(price)
+    }
 }

@@ -1,5 +1,6 @@
 package com.avivba.simbanyu.api.features.report
 
+import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.report.model.AddReportRequest
 import com.avivba.simbanyu.api.features.report.model.HandlingRequest
@@ -8,6 +9,7 @@ import com.avivba.simbanyu.api.features.report.model.ReportStatus
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.upload.UploadService
 import com.avivba.simbanyu.api.features.upload.model.Upload
+import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
@@ -18,6 +20,8 @@ class ReportService(
     private val subscriberRepository: SubscriberRepository,
     private val notificationsService: NotificationService,
     private val uploadService: UploadService,
+    private val userRepository: UserRepository,
+    private val activityService: ActivityService,
 ) {
     fun getAllReports(): List<Report> = reportRepository.findAll()
 
@@ -32,11 +36,13 @@ class ReportService(
     }
 
     fun addReport(
-        subscriberId: String,
         data: AddReportRequest,
-        image: MultipartFile
+        image: MultipartFile,
+        username: String,
     ): Report {
-        val subscriber = subscriberRepository.findById(UUID.fromString(subscriberId)).orElseThrow()
+        val subscriber = subscriberRepository.findSubscriberByUser_Username(username).firstOrNull()
+            ?: throw IllegalArgumentException("User is not a subscriber")
+
         val image = uploadService.saveMultipart(image)
         val report = Report(
             address = data.address,
@@ -60,7 +66,9 @@ class ReportService(
         id: String,
         data: HandlingRequest,
         image: MultipartFile,
+        username: String,
     ): Report {
+        val user = userRepository.findByUsername(username)
         val report = reportRepository.findById(UUID.fromString(id)).orElseThrow()
         val image = uploadService.saveMultipart(image)
 
@@ -78,11 +86,11 @@ class ReportService(
             }
 
             ReportStatus.COMPLETED -> {
-               notificationsService.sendNotificationToUser(
-                   title = "Laporan Selesai Ditangani",
-                   body = "Laporan anda telah selesai ditangani, terima kasih telah menggunakan layanan kami.",
-                   user = report.subscriber.user
-               )
+                notificationsService.sendNotificationToUser(
+                    title = "Laporan Selesai Ditangani",
+                    body = "Laporan anda telah selesai ditangani, terima kasih telah menggunakan layanan kami.",
+                    user = report.subscriber.user
+                )
             }
 
             ReportStatus.REJECTED -> {
@@ -98,10 +106,26 @@ class ReportService(
             }
         }
 
+        activityService.recordActivity(
+            user = user,
+            title = "Proses Laporan #${report.id}",
+            body = "Laporan telah diproses. Status: ${data.status}.",
+        )
+
         return reportRepository.save(report)
     }
 
-    fun deleteReport(id: String) {
-        reportRepository.deleteById(UUID.fromString(id))
+    fun deleteReport(
+        id: String,
+        username: String,
+    ) {
+        val user = userRepository.findByUsername(username)
+        val report = reportRepository.findById(UUID.fromString(id)).orElseThrow()
+        reportRepository.delete(report)
+        activityService.recordActivity(
+            user = user,
+            title = "Hapus Laporan",
+            body = "Laporan ${id} telah dihapus.",
+        )
     }
 }

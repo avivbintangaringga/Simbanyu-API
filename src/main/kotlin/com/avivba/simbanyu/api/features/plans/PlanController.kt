@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.features.plans.model.PlanDto
 import com.avivba.simbanyu.api.features.plans.model.PlanRequest
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -41,9 +42,13 @@ class PlanController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("Plan created successfully.")
     fun addPlan(
-        @Valid @RequestBody body: PlanRequest
+        @Valid @RequestBody body: PlanRequest,
+        authentication: Authentication
     ): PlanDto {
-        return planService.addPlan(body).let {
+        return planService.addPlan(
+            data = body,
+            username = authentication.name
+        ).let {
             PlanDto.fromEntity(it)
         }
     }
@@ -53,9 +58,14 @@ class PlanController(
     @ResponseMessage("Plan updated successfully.")
     fun updatePlan(
         @PathVariable id: String,
-        @Valid @RequestBody body: PlanRequest
+        @Valid @RequestBody body: PlanRequest,
+        authentication: Authentication
     ): PlanDto {
-        return planService.updatePlan(id, body).let {
+        return planService.updatePlan(
+            id = id,
+            data = body,
+            username = authentication.name
+        ).let {
             PlanDto.fromEntity(it)
         }
     }
@@ -64,8 +74,12 @@ class PlanController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("Plan deleted successfully.")
     fun deletePlan(
-        @PathVariable id: String
+        @PathVariable id: String,
+        authentication: Authentication
     ) {
-        planService.deletePlan(id)
+        planService.deletePlan(
+            id = id,
+            username = authentication.name
+        )
     }
 }

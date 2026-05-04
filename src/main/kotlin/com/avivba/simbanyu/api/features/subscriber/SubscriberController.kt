@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -41,9 +42,13 @@ class SubscriberController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("Subscriber created successfully.")
     fun addSubscriber(
-        @Valid @RequestBody body: AddSubscriberRequest
+        @Valid @RequestBody body: AddSubscriberRequest,
+        authentication: Authentication
     ): SubscriberDto {
-        return subscriberService.addSubscriber(body).let {
+        return subscriberService.addSubscriber(
+            data = body,
+            username = authentication.name
+        ).let {
             SubscriberDto.fromEntity(it)
         }
     }
@@ -53,9 +58,14 @@ class SubscriberController(
     @ResponseMessage("Subscriber updated successfully.")
     fun updateSubscriber(
         @PathVariable id: String,
-        @Valid @RequestBody body: UpdateSubscriberRequest
+        @Valid @RequestBody body: UpdateSubscriberRequest,
+        authentication: Authentication
     ): SubscriberDto {
-        return subscriberService.updateSubscriber(id, body).let {
+        return subscriberService.updateSubscriber(
+            id = id,
+            data = body,
+            username = authentication.name
+        ).let {
             SubscriberDto.fromEntity(it)
         }
     }
@@ -64,6 +74,10 @@ class SubscriberController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("Subscriber deleted successfully.")
     fun deleteSubscriber(
-        @PathVariable id: String
-    ) = subscriberService.deleteSubscriberById(id)
+        @PathVariable id: String,
+        authentication: Authentication
+    ) = subscriberService.deleteSubscriberById(
+        id = id,
+        username = authentication.name
+    )
 }

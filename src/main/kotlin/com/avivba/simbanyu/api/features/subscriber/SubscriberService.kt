@@ -1,5 +1,6 @@
 package com.avivba.simbanyu.api.features.subscriber
 
+import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.plans.PlanRepository
 import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
@@ -25,6 +26,7 @@ class SubscriberService(
     private val planRepository: PlanRepository,
     private val usageService: UsageService,
     private val encoder: PasswordEncoder,
+    private val activityService: ActivityService,
 ) {
     fun getAllSubscribers(): List<SubscriberDto> {
         val results = subscriberRepository.findAllWithLastUsageDate()
@@ -43,7 +45,9 @@ class SubscriberService(
     @Transactional
     fun addSubscriber(
         data: AddSubscriberRequest,
+        username: String,
     ): Subscriber {
+        val currentUser = userRepository.findByUsername(username)
         val user = User(
             username = data.meterId,
             password = encoder.encode(data.password)!!,
@@ -69,13 +73,21 @@ class SubscriberService(
             data.initialMeter
         )
 
+        activityService.recordActivity(
+            user = currentUser,
+            title = "Tambah Subscriber",
+            body = "Subscriber baru telah ditambahkan.",
+        )
+
         return savedSubscriber
     }
 
     fun updateSubscriber(
         id: String,
-        data: UpdateSubscriberRequest
+        data: UpdateSubscriberRequest,
+        username: String,
     ): Subscriber {
+        val user = userRepository.findByUsername(username)
         val subscriber = subscriberRepository.findById(UUID.fromString(id)).orElseThrow()
 
         subscriber.meterId = data.meterId
@@ -84,13 +96,27 @@ class SubscriberService(
         subscriber.latitude = data.latitude
         subscriber.plan = planRepository.findById(UUID.fromString(data.planId)).orElseThrow()
 
-        return subscriberRepository.save(subscriber)
+        val updatedSubscriber = subscriberRepository.save(subscriber)
+
+        activityService.recordActivity(
+            user = user,
+            title = "Update Subscriber",
+            body = "Subscriber ${id} telah diperbarui.",
+        )
+
+        return updatedSubscriber
     }
 
-    fun deleteSubscriberById(id: String) {
+    fun deleteSubscriberById(id: String, username: String) {
+        val user = userRepository.findByUsername(username)
         val subscriber = subscriberRepository.findById(UUID.fromString(id)).orElseThrow()
         userRepository.delete(subscriber.user)
         subscriberRepository.delete(subscriber)
+        activityService.recordActivity(
+            user = user,
+            title = "Hapus Subscriber",
+            body = "Subscriber ${id} telah dihapus.",
+        )
     }
 
     private fun rowToDto(row: Array<Any?>, currentMonth: YearMonth): SubscriberDto {

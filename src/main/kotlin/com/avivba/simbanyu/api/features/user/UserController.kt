@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.user.model.UserDto
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -49,11 +50,13 @@ class UserController(
     @ResponseMessage("User created successfully.")
     fun addUser(
         @Valid @RequestPart("data") data: AddUserRequest,
-        @RequestPart("image") image: MultipartFile? = null
+        @RequestPart("image") image: MultipartFile? = null,
+        authentication: Authentication
     ): UserDto {
         return userService.addUser(
             data = data,
-            image = image
+            image = image,
+            username = authentication.name
         ).let {
             UserDto.fromEntity(it)
         }
@@ -65,12 +68,14 @@ class UserController(
     fun updateUser(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: UpdateUserRequest,
-        @RequestPart("image") image: MultipartFile? = null
+        @RequestPart("image") image: MultipartFile? = null,
+        authentication: Authentication
     ): UserDto {
         return userService.updateUser(
             id = id,
             data = data,
-            image = image
+            image = image,
+            username = authentication.name
         ).let {
             UserDto.fromEntity(it)
         }
@@ -80,8 +85,12 @@ class UserController(
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseMessage("User deleted successfully.")
     fun deleteUser(
-        @PathVariable id: String
+        @PathVariable id: String,
+        authentication: Authentication
     ) {
-        userService.deleteUser(id)
+        userService.deleteUser(
+            id = id,
+            username = authentication.name
+        )
     }
 }

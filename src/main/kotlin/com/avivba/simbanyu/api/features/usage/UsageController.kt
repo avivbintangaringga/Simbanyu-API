@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api/usages")
 class UsageController(
     private val usageService: UsageService,
-    private val userRepository: UserRepository,
     private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
@@ -65,13 +64,12 @@ class UsageController(
     fun recordUsage(
         @Valid @RequestPart("data") data: UsageRequest,
         @RequestPart("image") image: MultipartFile,
-        @AuthenticationPrincipal userDetails: UserDetails
+        authentication: Authentication,
     ): UsageDto {
-        val user = userRepository.findByUsername(userDetails.username)
         return usageService.recordUsage(
             data = data,
             image = image,
-            user = user
+            username = authentication.name
         ).let {
             UsageDto.fromEntity(it)
         }
@@ -84,14 +82,13 @@ class UsageController(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: UsageRequest,
         @RequestPart("image") image: MultipartFile?,
-        @AuthenticationPrincipal userDetails: UserDetails
+        authentication: Authentication
     ): UsageDto {
-        val user = userRepository.findByUsername(userDetails.username)
         return usageService.updateUsage(
             id = id,
             data = data,
             image = image,
-            user = user
+            username = authentication.name
         ).let {
             UsageDto.fromEntity(it)
         }
@@ -102,7 +99,11 @@ class UsageController(
     @ResponseMessage("Usage deleted successfully.")
     fun deleteRecord(
         @PathVariable id: String,
+        authentication: Authentication
     ) {
-        usageService.deleteUsage(id)
+        usageService.deleteUsage(
+            id = id,
+            username = authentication.name
+        )
     }
 }

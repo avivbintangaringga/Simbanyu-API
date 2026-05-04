@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
+import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.User
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -20,7 +21,8 @@ class UsageService(
     private val billService: BillService,
     private val notificationService: NotificationService,
     private val activityService: ActivityService,
-    private val uploadService: UploadService
+    private val uploadService: UploadService,
+    private val userRepository: UserRepository,
 ) {
     fun getAllUsage(): List<Usage> {
         return usageRepository.findUsagesByIsInitialOrderByCreatedAtDesc(isInitial = false)
@@ -67,8 +69,9 @@ class UsageService(
     fun recordUsage(
         data: UsageRequest,
         image: MultipartFile,
-        user: User
+        username: String,
     ): Usage {
+        val currentUser = userRepository.findByUsername(username)
         val subscriber = subscriberRepository.findById(UUID.fromString(data.subscriberId)).orElseThrow()
         val previousUsage = usageRepository.findFirstBySubscriberOrderByCreatedAtDesc(subscriber)
             ?: throw IllegalStateException("Subscriber doesn't have any previous usage record")
@@ -102,13 +105,13 @@ class UsageService(
         notificationService.sendNotificationToUser(
             title = "Pencatatan Meter (${subscriber.meterId})",
             body = "Pencatatan meter berhasil dilakukan.",
-            user = user
+            user = currentUser
         )
 
         activityService.recordActivity(
             title = "Pencatatan Meter (${subscriber.meterId})",
             body = "Pencatatan meter berhasil dilakukan.",
-            user = user,
+            user = currentUser
         )
 
         return finalResult
@@ -119,8 +122,9 @@ class UsageService(
         id: String,
         data: UsageRequest,
         image: MultipartFile?,
-        user: User,
+        username: String
     ): Usage {
+        val currentUser = userRepository.findByUsername(username)
         val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()
 
         if (data.currentMeter <= usage.meterStart) {
@@ -147,19 +151,26 @@ class UsageService(
         notificationService.sendNotificationToUser(
             title = "Pembaruan Pencatatan Meter (${usage.subscriber.meterId})",
             body = "Pembaruan pencatatan meter berhasil dilakukan.",
-            user = user
+            user =  currentUser
         )
 
         activityService.recordActivity(
             title = "Pembaruan pencatatan Meter (${usage.subscriber.meterId})",
             body = "Pembaruan pencatatan meter berhasil dilakukan.",
-            user = user,
+            user = currentUser
         )
 
         return updatedUsage
     }
 
-    fun deleteUsage(id: String) {
-        usageRepository.deleteById(UUID.fromString(id))
+    fun deleteUsage(id: String, username: String) {
+        val user = userRepository.findByUsername(username)
+        val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()
+        usageRepository.delete(usage)
+        activityService.recordActivity(
+            user = user,
+            title = "Hapus Pencatatan Meter",
+            body = "Pencatatan meter ${id} telah dihapus.",
+        )
     }
 }

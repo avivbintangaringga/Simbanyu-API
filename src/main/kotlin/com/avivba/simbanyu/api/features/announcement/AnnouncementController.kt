@@ -3,8 +3,11 @@ package com.avivba.simbanyu.api.features.announcement
 import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.announcement.model.AnnouncementDto
 import com.avivba.simbanyu.api.features.announcement.model.AnnouncementRequest
+import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/announcements")
 class AnnouncementController(
-    private val announcementService: AnnouncementService
+    private val announcementService: AnnouncementService,
 ) {
     @GetMapping
     @ResponseMessage("Announcements retrieved successfully.")
@@ -44,24 +47,31 @@ class AnnouncementController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @ResponseMessage("Announcement created successfully.")
     fun addAnnouncement(
-        @Valid @RequestBody body: AnnouncementRequest
-    ): AnnouncementDto =
-        announcementService.addAnnouncement(body)
+        @Valid @RequestBody body: AnnouncementRequest,
+        authentication: Authentication
+    ): AnnouncementDto {
+        return announcementService.addAnnouncement(
+            data = body,
+            username = authentication.name
+        )
             .let {
                 AnnouncementDto.fromEntity(it)
             }
+    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @ResponseMessage("Announcement updated successfully.")
     fun updateAnnouncement(
         @PathVariable id: String,
-        @Valid @RequestBody body: AnnouncementRequest
+        @Valid @RequestBody body: AnnouncementRequest,
+        authentication: Authentication
     ): AnnouncementDto =
         announcementService
             .updateAnnouncement(
-                id,
-                body
+                id = id,
+                data = body,
+                username = authentication.name
             )
             .let {
                 AnnouncementDto.fromEntity(it)
@@ -70,6 +80,11 @@ class AnnouncementController(
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @ResponseMessage("Announcement deleted successfully.")
-    fun deleteAnnouncement(@PathVariable id: String) =
-        announcementService.deleteAnnouncementById(id)
+    fun deleteAnnouncement(
+        @PathVariable id: String,
+        authentication: Authentication
+    ) = announcementService.deleteAnnouncementById(
+        id = id,
+        username = authentication.name
+    )
 }

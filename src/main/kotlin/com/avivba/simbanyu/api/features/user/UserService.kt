@@ -1,5 +1,6 @@
 package com.avivba.simbanyu.api.features.user
 
+import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.upload.UploadService
 import com.avivba.simbanyu.api.features.upload.model.Upload
 import com.avivba.simbanyu.api.features.user.model.AddUserRequest
@@ -16,7 +17,8 @@ import java.util.UUID
 class UserService(
     private val userRepository: UserRepository,
     private val encoder: PasswordEncoder,
-    private val uploadService: UploadService
+    private val uploadService: UploadService,
+    private val activityService: ActivityService,
 ) {
     fun getAllUsers(): List<User> = userRepository.findAll()
 
@@ -24,7 +26,9 @@ class UserService(
         userRepository.findById(UUID.fromString(id)).orElseThrow()
 
     @Transactional
-    fun addUser(data: AddUserRequest, image: MultipartFile?): User {
+    fun addUser(data: AddUserRequest, image: MultipartFile?, username: String): User {
+        val currentUser = userRepository.findByUsername(username)
+
         var photoImage: Upload? = null
 
         if (image != null) {
@@ -40,10 +44,20 @@ class UserService(
             role = UserRole.valueOf(data.role),
         )
 
-        return userRepository.save(user)
+        val savedUser = userRepository.save(user)
+
+        activityService.recordActivity(
+            user = currentUser,
+            title = "Tambah User",
+            body = "User baru telah ditambahkan.",
+        )
+
+        return savedUser
     }
 
-    fun updateUser(id: String, data: UpdateUserRequest, image: MultipartFile?): User {
+    @Transactional
+    fun updateUser(id: String, data: UpdateUserRequest, image: MultipartFile?, username: String): User {
+        val currentUser = userRepository.findByUsername(username)
         val user = userRepository
             .findById(UUID.fromString(id))
             .orElseThrow()
@@ -61,8 +75,24 @@ class UserService(
         }
 
         val updatedUser = userRepository.save(user)
+
+        activityService.recordActivity(
+            user = currentUser,
+            title = "Update User",
+            body = "User ${id} telah diperbarui.",
+        )
+
         return updatedUser
     }
 
-    fun deleteUser(id: String) = userRepository.deleteById(UUID.fromString(id))
+    fun deleteUser(id: String, username: String) {
+        val currentUser = userRepository.findByUsername(username)
+        val user = userRepository.findById(UUID.fromString(id)).orElseThrow()
+        userRepository.delete(user)
+        activityService.recordActivity(
+            user = currentUser,
+            title = "Hapus User",
+            body = "User ${id} telah dihapus.",
+        )
+    }
 }
