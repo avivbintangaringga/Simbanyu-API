@@ -28,7 +28,8 @@ class SecurityConfiguration(
                     "/api/auth/login",
                     "/api/auth/refresh",
                     "/error",
-                    "/uploads/**", // TODO: Is this the best way to do this?
+                    "/uploads/**",
+                    "/.well-known/**",
                 ).permitAll()
                 .anyRequest()
                 .fullyAuthenticated()

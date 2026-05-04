@@ -7,7 +7,6 @@ data class RequestPaymentRequest(
     @field:NotEmpty
     val billIds: List<String>,
 
-    // TODO: Set @field to all dto
     @field:NotBlank
     val callbackUrl: String,
 )
