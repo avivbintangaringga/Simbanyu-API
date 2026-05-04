@@ -54,13 +54,13 @@ class User(
     @Enumerated(EnumType.STRING)
     var role: UserRole = UserRole.SUBSCRIBER,
 
-    @OneToMany(
+    @OneToOne(
         mappedBy = "user",
         cascade = [CascadeType.ALL],
         orphanRemoval = true
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var fcmTokens: MutableList<FcmToken> = mutableListOf(),
+    var fcmToken: FcmToken? = null,
 
     @OneToMany(
         mappedBy = "user",

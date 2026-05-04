@@ -13,9 +13,17 @@ class FcmTokenService(
         token: String,
         username: String
     ): FcmToken {
+        val user = userRepository.findByUsername(username)
+        val currentToken = fcmTokenRepository.findFcmTokenByUser(user).firstOrNull()
+
+        if (currentToken != null) {
+            currentToken.token = token
+            return fcmTokenRepository.save(currentToken)
+        }
+
         val token = FcmToken(
             token = token,
-            user = userRepository.findByUsername(username)
+            user = user
         )
 
         return fcmTokenRepository.save(token)
@@ -24,7 +32,8 @@ class FcmTokenService(
     fun getUserToken(
         username: String
     ): String? {
-        val token = fcmTokenRepository.findFcmTokenByUser_UsernameOrderByCreatedAtDesc(username)
+        val user = userRepository.findByUsername(username)
+        val token = fcmTokenRepository.findFcmTokenByUser(user)
         return if (token.isNotEmpty()) {
             token[0].token
         } else {
