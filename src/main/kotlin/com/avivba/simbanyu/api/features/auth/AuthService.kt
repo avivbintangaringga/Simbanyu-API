@@ -9,6 +9,7 @@ import com.avivba.simbanyu.api.features.auth.model.RefreshToken
 import com.avivba.simbanyu.api.features.auth.model.TokenResponseDto
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
@@ -63,7 +64,7 @@ class AuthService(
                 token = generateAccessToken(userDetails),
             )
         } else {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refresh token")
+            throw AccessDeniedException("Invalid refresh token")
         }
     }
 

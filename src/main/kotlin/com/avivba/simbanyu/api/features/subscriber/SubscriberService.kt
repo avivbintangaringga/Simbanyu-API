@@ -8,6 +8,7 @@ import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
 import com.avivba.simbanyu.api.features.usage.UsageService
 import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.UserRepository
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -107,7 +108,7 @@ class SubscriberService(
                 lastRecordedAt?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()).toString() }
             )
         } else {
-            throw Exception("Cannot find subscriber")
+            throw EntityNotFoundException("Cannot find subscriber")
         }
     }
 }

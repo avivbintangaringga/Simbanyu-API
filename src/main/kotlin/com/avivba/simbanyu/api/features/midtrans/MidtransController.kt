@@ -37,7 +37,7 @@ class MidtransController(
         )
 
         if (bills.isEmpty()) {
-            throw IllegalArgumentException("Bills not found")
+            throw IllegalArgumentException("Bills is empty or not found.")
         }
 
         if (bills.any { it.status != BillStatus.UNPAID }) {

@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.report.model.ReportDto
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.utils.hasRole
 import jakarta.validation.Valid
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -42,7 +43,7 @@ class ReportController(
             if (subscriber.isNotEmpty()) {
                 reportService.getReportBySubscriberId(subscriberId = subscriber[0].id.toString())
             } else {
-                throw Exception("User is not a subscriber")
+                throw IllegalArgumentException("User is not a subscriber")
             }
         }).let {
             it.map {
@@ -61,7 +62,7 @@ class ReportController(
     ): ReportDto {
         val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
         if (subscriber.isEmpty()) {
-            throw Exception("User is not a subscriber")
+            throw IllegalArgumentException("User is not a subscriber")
         }
 
         return reportService.addReport(

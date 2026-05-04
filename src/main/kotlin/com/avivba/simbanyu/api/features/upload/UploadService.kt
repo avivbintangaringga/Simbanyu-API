@@ -4,6 +4,7 @@ import com.avivba.simbanyu.api.config.properties.FileStorageProperties
 import com.avivba.simbanyu.api.features.upload.model.Upload
 import com.avivba.simbanyu.api.features.upload.model.UploadResource
 import com.avivba.simbanyu.api.utils.detectContentType
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -20,14 +21,14 @@ class UploadService(
 
     fun getFile(id: String): UploadResource {
         if (!validateFileId(id)) {
-            throw RuntimeException("Invalid file ID")
+            throw IllegalArgumentException("Invalid file ID")
         }
 
         val upload = uploadRepository.findById(UUID.fromString(id)).orElseThrow()
 
         val file = File(storageProps.uploadDir, id)
         if (!file.exists()) {
-            throw RuntimeException("File not found")
+            throw EntityNotFoundException("File not found")
         }
         val resource = FileSystemResource(file)
 
@@ -39,11 +40,11 @@ class UploadService(
 
     fun saveMultipart(file: MultipartFile): Upload {
         if (file.isEmpty) {
-            throw RuntimeException("File is empty")
+            throw IllegalArgumentException("File is empty")
         }
 
         if (file.size > storageProps.maxFileSize) {
-            throw RuntimeException("File size exceeds the limit")
+            throw IllegalArgumentException("File size exceeds the limit")
         }
 
         file.inputStream.use { input ->
@@ -53,7 +54,7 @@ class UploadService(
                     .allowedFileTypes
                     .contains(contentType)
             ) {
-                throw RuntimeException("File type not allowed")
+                throw IllegalArgumentException("File type not allowed")
             }
 
             val upload = uploadRepository.save(
@@ -81,18 +82,18 @@ class UploadService(
     fun saveBase64(base64: String): String {
         val cleanedBase64 = base64.substringAfter("base64,")
         if (cleanedBase64.length > maxBase64Size) {
-            throw RuntimeException("File size exceeds the limit")
+            throw IllegalArgumentException("File size exceeds the limit")
         }
 
         val id = UUID.randomUUID().toString()
         val content = Base64.getDecoder().decode(cleanedBase64)
 
         if (content.size > storageProps.maxFileSize) {
-            throw RuntimeException("File size exceeds the limit")
+            throw IllegalArgumentException("File size exceeds the limit")
         }
 
         if (!storageProps.allowedFileTypes.contains(detectContentType(content))) {
-            throw RuntimeException("File type not allowed")
+            throw IllegalArgumentException("File type not allowed")
         }
 
         val file = File(storageProps.uploadDir, id)
@@ -102,7 +103,7 @@ class UploadService(
 
     private fun validateFileId(id: String): Boolean {
         if (id.isBlank()) {
-            throw RuntimeException("File ID cannot be empty")
+            throw IllegalArgumentException("File ID cannot be empty")
         }
 
         return try {

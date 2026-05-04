@@ -48,7 +48,7 @@ class UsageController(
         } else {
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             if (subscriber.isEmpty()) {
-                throw Exception("User is not a subscriber")
+                throw IllegalArgumentException("User is not a subscriber")
             }
 
             val subscriberId = subscriber[0].id.toString()

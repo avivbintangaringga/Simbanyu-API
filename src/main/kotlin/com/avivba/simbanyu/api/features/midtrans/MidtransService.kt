@@ -16,6 +16,7 @@ import com.avivba.simbanyu.api.utils.getMonthName
 import com.avivba.simbanyu.api.utils.getYear
 import com.avivba.simbanyu.api.utils.sha512
 import com.github.f4b6a3.ulid.UlidCreator
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -111,13 +112,13 @@ class MidtransService(
         )
 
         if (!isSignatureValid) {
-            throw Exception("Invalid notification signature")
+            throw IllegalArgumentException("Invalid notification signature")
         }
 
         val payments = midtransPaymentRepository.findMidtransPaymentByOrderId(data.orderId)
 
         if (payments.isEmpty()) {
-            throw Exception("Payment not found")
+            throw EntityNotFoundException("Payment not found")
         }
 
         val bills = payments.map { it.bill }

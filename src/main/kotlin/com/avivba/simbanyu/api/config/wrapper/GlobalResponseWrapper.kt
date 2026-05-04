@@ -27,6 +27,10 @@ class GlobalResponseWrapper : ResponseBodyAdvice<Any> {
         request: ServerHttpRequest,
         response: ServerHttpResponse
     ): Any? {
+        if (body is ApiResponse<*>) {
+            return body
+        }
+
         val annotation = returnType.getMethodAnnotation(ResponseMessage::class.java)
         val message = annotation?.message ?: "Action completed successfully."
 

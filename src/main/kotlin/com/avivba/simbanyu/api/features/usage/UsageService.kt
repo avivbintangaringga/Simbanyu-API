@@ -74,7 +74,7 @@ class UsageService(
             ?: throw IllegalStateException("Subscriber doesn't have any previous usage record")
 
         if (data.currentMeter <= previousUsage.meterEnd) {
-            throw IllegalStateException("Current meter must be greater than previous meter")
+            throw IllegalArgumentException("Current meter must be greater than previous meter")
         }
 
         // TODO: Check if current month is already recorded
@@ -124,7 +124,7 @@ class UsageService(
         val usage = usageRepository.findById(UUID.fromString(id)).orElseThrow()
 
         if (data.currentMeter <= usage.meterStart) {
-            throw IllegalStateException("Current meter must be greater than previous meter")
+            throw IllegalArgumentException("Current meter must be greater than previous meter")
         }
 
         if (image != null) {
