@@ -4,9 +4,9 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 
 data class PlanRequest(
-    @NotBlank
+    @field:NotBlank
     val name: String,
 
-    @Min(1)
+    @field:Min(1)
     val basePrice: Double,
 )

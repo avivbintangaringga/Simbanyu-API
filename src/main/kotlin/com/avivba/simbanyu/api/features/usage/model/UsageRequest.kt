@@ -2,13 +2,17 @@ package com.avivba.simbanyu.api.features.usage.model
 
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.Length
 
 data class UsageRequest(
-    @NotBlank
+    @field:NotBlank
+    @field:Length(min = 3, max = 255)
     val subscriberId: String,
 
-    @Min(1)
+    @field:Min(1)
+    @field:Length(min = 3, max = 255)
     val currentMeter: Int,
 
+    @field:Length(min = 0, max = 255)
     val operatorNotes: String? = null,
 )

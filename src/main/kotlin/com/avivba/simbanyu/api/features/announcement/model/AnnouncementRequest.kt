@@ -3,9 +3,9 @@ package com.avivba.simbanyu.api.features.announcement.model
 import jakarta.validation.constraints.NotEmpty
 
 data class AnnouncementRequest(
-    @NotEmpty
+    @field:NotEmpty
     val title: String,
 
-    @NotEmpty
+    @field:NotEmpty
     val body: String,
 )

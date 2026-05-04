@@ -3,9 +3,9 @@ package com.avivba.simbanyu.api.features.auth.model
 import jakarta.validation.constraints.NotEmpty
 
 data class LoginRequest(
-    @NotEmpty
+    @field:NotEmpty
     val username: String,
 
-    @NotEmpty
+    @field:NotEmpty
     val password: String
 )

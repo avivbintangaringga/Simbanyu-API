@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.validator.constraints.Length
 import java.time.Instant
 import java.util.UUID
 
@@ -22,6 +23,10 @@ class FcmToken(
     var id: UUID? = null,
 
     @Column(nullable = false)
+    @Length(
+        min = 10,
+        max = 4096
+    )
     var token: String,
 
     @ManyToOne
