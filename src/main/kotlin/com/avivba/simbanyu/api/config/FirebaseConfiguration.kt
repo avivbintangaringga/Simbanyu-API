@@ -4,8 +4,10 @@ import com.avivba.simbanyu.api.config.properties.FirebaseProperties
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import com.google.firebase.messaging.FirebaseMessaging
 import jakarta.annotation.PostConstruct
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.Base64
 
@@ -30,4 +32,7 @@ class FirebaseConfiguration(
             e.printStackTrace()
         }
     }
+
+    @Bean
+    fun getFirebaseMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
 }

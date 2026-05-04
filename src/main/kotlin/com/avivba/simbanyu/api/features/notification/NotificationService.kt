@@ -1,19 +1,24 @@
 package com.avivba.simbanyu.api.features.notification
 
 import com.avivba.simbanyu.api.features.fcm.FcmTokenService
+import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.notification.model.Notification
 import com.avivba.simbanyu.api.features.user.model.User
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.Message
 import org.springframework.stereotype.Service
 
 @Service
 class NotificationService(
     private val notificationRepository: NotificationRepository,
+    private val firebaseMessaging: FirebaseMessaging,
 ) {
     fun sendBroadcastNotification(
         title: String,
         body: String,
+        topic: BroadcastTopic
     ) {
-        sendPushNotificationToTopic(title, body, "broadcast")
+        sendPushNotificationToTopic(title, body, topic.topic)
         println("Broadcast notification: $title - $body")
     }
 
@@ -38,7 +43,14 @@ class NotificationService(
         body: String,
         topic: String
     ) {
-        // TODO : Implement notification to topic
+        val message = Message.builder()
+            .putData("title", title)
+            .putData("body", body)
+            .setTopic(topic)
+            .build()
+
+        val response = firebaseMessaging.send(message)
+        println("Successfully sent topic message: $response")
     }
 
     private fun sendPushNotification(
@@ -46,6 +58,13 @@ class NotificationService(
         body: String,
         token: String
     ) {
-        // TODO: Implement notification to user
+        val message = Message.builder()
+            .setToken(token)
+            .putData("title", title)
+            .putData("body", body)
+            .build()
+
+        val response = firebaseMessaging.send(message)
+        println("Successfully sent message: $response")
     }
 }

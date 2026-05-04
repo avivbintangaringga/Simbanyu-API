@@ -3,6 +3,7 @@ package com.avivba.simbanyu.api.features.announcement
 import com.avivba.simbanyu.api.features.announcement.model.Announcement
 import com.avivba.simbanyu.api.features.announcement.model.AnnouncementRequest
 import com.avivba.simbanyu.api.features.notification.NotificationService
+import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -32,7 +33,8 @@ class AnnouncementService(
 
         notificationService.sendBroadcastNotification(
             data.title,
-            data.body
+            data.body,
+            BroadcastTopic.ALL
         )
 
         return announcement
@@ -49,7 +51,8 @@ class AnnouncementService(
 
         notificationService.sendBroadcastNotification(
             data.title,
-            data.body
+            data.body,
+            BroadcastTopic.ALL
         )
 
         return announcementRepository
