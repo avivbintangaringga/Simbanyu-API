@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.auth
 
-import com.avivba.simbanyu.api.config.JwtProperties
+import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.components.CustomUserDetailsService
 import com.avivba.simbanyu.api.features.auth.model.LoginRequest

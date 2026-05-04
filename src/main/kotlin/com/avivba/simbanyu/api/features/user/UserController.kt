@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.user
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.user.model.AddUserRequest
 import com.avivba.simbanyu.api.features.user.model.UpdateUserRequest
 import com.avivba.simbanyu.api.features.user.model.UserDto
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController

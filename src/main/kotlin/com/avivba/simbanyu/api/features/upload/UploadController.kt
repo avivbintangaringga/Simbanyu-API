@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.upload
 
-import com.avivba.simbanyu.api.config.IgnoreResponseWrapper
+import com.avivba.simbanyu.api.config.wrapper.IgnoreResponseWrapper
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

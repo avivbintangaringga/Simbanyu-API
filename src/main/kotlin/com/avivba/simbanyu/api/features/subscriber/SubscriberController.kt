@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.subscriber
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
 import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
 import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest

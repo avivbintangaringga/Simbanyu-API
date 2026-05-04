@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.midtrans
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.bill.BillRepository
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.midtrans.model.PaymentCallbackRequest

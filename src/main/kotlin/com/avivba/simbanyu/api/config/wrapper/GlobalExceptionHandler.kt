@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.config
+package com.avivba.simbanyu.api.config.wrapper
 
 import com.avivba.simbanyu.api.base.ApiResponse
 import jakarta.persistence.EntityNotFoundException
@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
@@ -30,7 +31,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: org.springframework.web.context.request.WebRequest
+        request: WebRequest
     ): ResponseEntity<Any> {
         logger.warn("Validation failed", ex)
 
@@ -52,7 +53,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: HttpMessageNotReadableException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: org.springframework.web.context.request.WebRequest
+        request: WebRequest
     ): ResponseEntity<Any> {
         logger.warn("Malformed request body", ex)
 
@@ -67,7 +68,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: MissingServletRequestParameterException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: org.springframework.web.context.request.WebRequest
+        request: WebRequest
     ): ResponseEntity<Any> {
         logger.warn("Missing request parameter", ex)
 
@@ -82,7 +83,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         ex: HttpRequestMethodNotSupportedException,
         headers: HttpHeaders,
         status: HttpStatusCode,
-        request: org.springframework.web.context.request.WebRequest
+        request: WebRequest
     ): ResponseEntity<Any> {
         logger.warn("HTTP method is not supported", ex)
 

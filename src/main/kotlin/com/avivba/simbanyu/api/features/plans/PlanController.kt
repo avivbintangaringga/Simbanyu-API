@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.plans
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.plans.model.PlanDto
 import com.avivba.simbanyu.api.features.plans.model.PlanRequest
 import jakarta.validation.Valid

@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.announcement
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.announcement.model.AnnouncementDto
 import com.avivba.simbanyu.api.features.announcement.model.AnnouncementRequest
 import jakarta.validation.Valid

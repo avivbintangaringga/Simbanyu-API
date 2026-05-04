@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.config
+package com.avivba.simbanyu.api.config.wrapper
 
 import com.avivba.simbanyu.api.base.ApiResponse
 import org.springframework.core.MethodParameter

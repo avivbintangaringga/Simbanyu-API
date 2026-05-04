@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.upload
 
-import com.avivba.simbanyu.api.config.FileStorageProperties
+import com.avivba.simbanyu.api.config.properties.FileStorageProperties
 import com.avivba.simbanyu.api.features.upload.model.Upload
 import com.avivba.simbanyu.api.features.upload.model.UploadResource
 import com.avivba.simbanyu.api.utils.detectContentType

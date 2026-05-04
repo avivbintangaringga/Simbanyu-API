@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.auth
 
-import com.avivba.simbanyu.api.config.JwtProperties
+import com.avivba.simbanyu.api.config.properties.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys

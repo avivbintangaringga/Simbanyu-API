@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.bill
 
-import com.avivba.simbanyu.api.config.PriceProperties
+import com.avivba.simbanyu.api.config.properties.PriceProperties
 import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillItem
 import com.avivba.simbanyu.api.features.bill.model.BillStatus

@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.config
+package com.avivba.simbanyu.api.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

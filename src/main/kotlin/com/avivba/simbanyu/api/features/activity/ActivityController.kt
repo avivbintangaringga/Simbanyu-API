@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.activity
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.activity.model.ActivityDto
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.access.prepost.PreAuthorize

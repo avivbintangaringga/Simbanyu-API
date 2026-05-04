@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.config
+package com.avivba.simbanyu.api.config.wrapper
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

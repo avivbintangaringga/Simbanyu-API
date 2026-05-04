@@ -1,7 +1,6 @@
 package com.avivba.simbanyu.api.features.prices
 
-import com.avivba.simbanyu.api.base.ApiResponse
-import com.avivba.simbanyu.api.config.ResponseMessage
+import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.prices.model.PriceDto
 import com.avivba.simbanyu.api.features.prices.model.PriceRequest
 import jakarta.validation.Valid
