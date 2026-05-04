@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import org.springframework.web.servlet.resource.NoResourceFoundException
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 
 @RestControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
@@ -98,6 +101,21 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         )
     }
 
+    override fun handleNoResourceFoundException(
+        ex: NoResourceFoundException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        logger.warn("Static resource not found", ex)
+
+        return buildErrorResponse(
+            status = HttpStatus.NOT_FOUND,
+            message = "Resource not found",
+            errors = listOf(ex.message ?: "The requested resource was not found")
+        )
+    }
+
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolation(ex: ConstraintViolationException): ResponseEntity<ApiResponse.Error<Nothing>> {
         logger.warn("Constraint violation", ex)
@@ -163,6 +181,28 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             status = HttpStatus.CONFLICT,
             message = "Data integrity violation",
             errors = listOf(ex.mostSpecificCause.message ?: "Request conflicts with existing data")
+        )
+    }
+
+    @ExceptionHandler(ExpiredJwtException::class)
+    fun handleExpiredJwt(ex: ExpiredJwtException): ResponseEntity<ApiResponse.Error<Nothing>> {
+        logger.warn("JWT token expired", ex)
+
+        return buildTypedErrorResponse(
+            status = HttpStatus.UNAUTHORIZED,
+            message = "Authentication failed",
+            errors = listOf("JWT token has expired")
+        )
+    }
+
+    @ExceptionHandler(JwtException::class)
+    fun handleJwtException(ex: JwtException): ResponseEntity<ApiResponse.Error<Nothing>> {
+        logger.warn("Invalid JWT token", ex)
+
+        return buildTypedErrorResponse(
+            status = HttpStatus.UNAUTHORIZED,
+            message = "Authentication failed",
+            errors = listOf(ex.message ?: "Invalid JWT token")
         )
     }
 
