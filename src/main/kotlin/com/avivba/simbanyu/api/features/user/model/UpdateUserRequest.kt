@@ -2,7 +2,6 @@ package com.avivba.simbanyu.api.features.user.model
 
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
-import org.hibernate.validator.constraints.URL
 
 data class UpdateUserRequest(
     @field:NotBlank

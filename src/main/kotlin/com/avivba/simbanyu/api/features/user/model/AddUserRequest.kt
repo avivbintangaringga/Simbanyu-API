@@ -3,7 +3,6 @@ package com.avivba.simbanyu.api.features.user.model
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
-import org.hibernate.validator.constraints.URL
 
 data class AddUserRequest(
     @field:NotBlank

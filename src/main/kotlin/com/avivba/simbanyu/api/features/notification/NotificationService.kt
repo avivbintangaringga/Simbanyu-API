@@ -1,6 +1,5 @@
 package com.avivba.simbanyu.api.features.notification
 
-import com.avivba.simbanyu.api.features.fcm.FcmTokenService
 import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.notification.model.Notification
 import com.avivba.simbanyu.api.features.user.model.User

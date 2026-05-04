@@ -9,8 +9,7 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
-import java.util.Base64
-import java.util.UUID
+import java.util.*
 
 @Service
 class UploadService(

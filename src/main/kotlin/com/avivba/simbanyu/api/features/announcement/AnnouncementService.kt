@@ -7,7 +7,7 @@ import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
 class AnnouncementService(

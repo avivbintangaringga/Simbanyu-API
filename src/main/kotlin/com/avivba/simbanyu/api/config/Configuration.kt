@@ -1,12 +1,12 @@
 package com.avivba.simbanyu.api.config
 
-import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
-import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.components.CustomUserDetailsService
 import com.avivba.simbanyu.api.config.properties.FileStorageProperties
 import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.config.properties.MidtransProperties
 import com.avivba.simbanyu.api.config.properties.PriceProperties
+import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
+import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

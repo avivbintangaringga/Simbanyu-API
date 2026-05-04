@@ -1,16 +1,10 @@
 package com.avivba.simbanyu.api.features.midtrans
 
 import com.avivba.simbanyu.api.config.properties.MidtransProperties
-import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.BillRepository
+import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
-import com.avivba.simbanyu.api.features.midtrans.model.Callback
-import com.avivba.simbanyu.api.features.midtrans.model.CustomerDetails
-import com.avivba.simbanyu.api.features.midtrans.model.ItemDetails
-import com.avivba.simbanyu.api.features.midtrans.model.PaymentCallbackRequest
-import com.avivba.simbanyu.api.features.midtrans.model.SnapTransactionRequest
-import com.avivba.simbanyu.api.features.midtrans.model.SnapTransactionResponse
-import com.avivba.simbanyu.api.features.midtrans.model.TransactionDetails
+import com.avivba.simbanyu.api.features.midtrans.model.*
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.utils.getMonthName
 import com.avivba.simbanyu.api.utils.getYear
@@ -22,7 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
-import java.util.Base64
+import java.util.*
 
 @Service
 class MidtransService(

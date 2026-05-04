@@ -5,8 +5,7 @@ import com.avivba.simbanyu.api.features.plans.model.Plan
 import com.avivba.simbanyu.api.features.plans.model.PlanRequest
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.stereotype.Service
-import java.util.UUID
-import javax.print.attribute.standard.RequestingUserName
+import java.util.*
 
 @Service
 class PlanService(

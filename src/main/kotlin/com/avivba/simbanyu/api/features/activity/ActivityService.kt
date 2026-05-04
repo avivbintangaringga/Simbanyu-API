@@ -2,7 +2,6 @@ package com.avivba.simbanyu.api.features.activity
 
 import com.avivba.simbanyu.api.features.activity.model.Activity
 import com.avivba.simbanyu.api.features.user.model.User
-import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.UserRole
 import org.springframework.stereotype.Service
 

@@ -8,11 +8,10 @@ import com.avivba.simbanyu.api.features.report.model.Report
 import com.avivba.simbanyu.api.features.report.model.ReportStatus
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.upload.UploadService
-import com.avivba.simbanyu.api.features.upload.model.Upload
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.util.UUID
+import java.util.*
 
 @Service
 class ReportService(

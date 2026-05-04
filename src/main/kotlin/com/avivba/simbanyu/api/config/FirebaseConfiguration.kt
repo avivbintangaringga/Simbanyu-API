@@ -9,7 +9,7 @@ import jakarta.annotation.PostConstruct
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.Base64
+import java.util.*
 
 @Configuration
 @EnableConfigurationProperties(FirebaseProperties::class)

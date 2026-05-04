@@ -3,7 +3,6 @@ package com.avivba.simbanyu.api.features.fcm
 import com.avivba.simbanyu.api.features.fcm.model.FcmToken
 import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.user.UserRepository
-import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.google.firebase.messaging.FirebaseMessaging
 import org.springframework.stereotype.Service

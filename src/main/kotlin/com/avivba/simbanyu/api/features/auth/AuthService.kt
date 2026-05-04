@@ -1,21 +1,19 @@
 package com.avivba.simbanyu.api.features.auth
 
-import com.avivba.simbanyu.api.config.properties.JwtProperties
-import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.components.CustomUserDetailsService
+import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.features.auth.model.LoginRequest
 import com.avivba.simbanyu.api.features.auth.model.LoginResponseDto
 import com.avivba.simbanyu.api.features.auth.model.RefreshToken
 import com.avivba.simbanyu.api.features.auth.model.TokenResponseDto
+import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.transaction.Transactional
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
-import java.util.Date
+import java.util.*
 
 @Service
 class AuthService(

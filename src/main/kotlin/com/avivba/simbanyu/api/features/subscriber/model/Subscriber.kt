@@ -1,27 +1,18 @@
 package com.avivba.simbanyu.api.features.subscriber.model
 
-import com.avivba.simbanyu.api.features.usage.model.Usage
-import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.plans.model.Plan
 import com.avivba.simbanyu.api.features.report.model.Report
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import com.avivba.simbanyu.api.features.usage.model.Usage
+import com.avivba.simbanyu.api.features.user.model.User
+import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
+import java.util.*
 import java.util.Collections.emptyList
-import java.util.UUID
 
 @Entity
 @Table(name = "subscribers")

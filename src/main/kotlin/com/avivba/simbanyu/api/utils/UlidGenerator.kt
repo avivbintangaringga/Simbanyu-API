@@ -1,11 +1,10 @@
 package com.avivba.simbanyu.api.utils
 
-import com.github.f4b6a3.ulid.Ulid
 import com.github.f4b6a3.ulid.UlidCreator
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.generator.BeforeExecutionGenerator
 import org.hibernate.generator.EventType
-import java.util.EnumSet
+import java.util.*
 
 class UlidGenerator : BeforeExecutionGenerator {
     override fun generate(

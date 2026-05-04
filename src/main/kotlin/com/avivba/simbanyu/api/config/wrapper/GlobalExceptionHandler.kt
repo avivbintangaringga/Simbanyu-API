@@ -1,6 +1,8 @@
 package com.avivba.simbanyu.api.config.wrapper
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
@@ -22,8 +24,6 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import org.springframework.web.servlet.resource.NoResourceFoundException
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.JwtException
 
 @RestControllerAdvice
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
