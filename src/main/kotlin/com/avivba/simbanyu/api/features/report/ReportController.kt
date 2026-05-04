@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.report
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.report.model.AddReportRequest
 import com.avivba.simbanyu.api.features.report.model.HandlingRequest
 import com.avivba.simbanyu.api.features.report.model.ReportDto
@@ -30,9 +31,10 @@ class ReportController(
     private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
+    @ResponseMessage("Reports retrieved successfully.")
     fun getReports(
         authentication: Authentication
-    ): ApiResponse<List<ReportDto>> {
+    ): List<ReportDto> {
         val isAdmin = authentication.hasRole("ADMIN")
         val isOperator = authentication.hasRole("OPERATOR")
 
@@ -46,21 +48,20 @@ class ReportController(
                 throw Exception("User is not a subscriber")
             }
         }).let {
-            ApiResponse.success(
-                "Reports retrieved successfully.",
-                it.map {
-                    ReportDto.fromEntity(it)
-                })
+            it.map {
+                ReportDto.fromEntity(it)
+            }
         }
     }
 
     @PostMapping
     @PreAuthorize("hasRole('SUBSCRIBER')")
+    @ResponseMessage("Report created successfully.")
     fun createReport(
         @AuthenticationPrincipal userDetails: UserDetails,
         @Valid @RequestPart("data") data: AddReportRequest,
         @RequestPart("image") image: MultipartFile
-    ): ApiResponse<ReportDto> {
+    ): ReportDto {
         val subscriber = subscriberRepository.findSubscriberByUser_Username(userDetails.username)
         if (subscriber.isEmpty()) {
             throw Exception("User is not a subscriber")
@@ -71,41 +72,33 @@ class ReportController(
             data = data,
             image = image
         ).let {
-            ApiResponse.success(
-                "Report created successfully.",
-                ReportDto.fromEntity(it)
-            )
+            ReportDto.fromEntity(it)
         }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
+    @ResponseMessage("Report handled successfully.")
     fun handleReport(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: HandlingRequest,
         @RequestPart("image") image: MultipartFile
-    ): ApiResponse<ReportDto> {
+    ): ReportDto {
         return reportService.handleReport(
             id = id,
             data = data,
             image = image
         ).let {
-            ApiResponse.success(
-                "Report handled successfully.",
-                ReportDto.fromEntity(it)
-            )
+            ReportDto.fromEntity(it)
         }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Report deleted successfully.")
     fun deleteReport(
         @PathVariable id: String
-    ): ApiResponse<Unit> {
+    ) {
         reportService.deleteReport(id)
-        return ApiResponse.success(
-            "Report deleted successfully.",
-            Unit
-        )
     }
 }

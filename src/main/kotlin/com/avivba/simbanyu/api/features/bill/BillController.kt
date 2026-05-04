@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.bill
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.bill.model.BillDto
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.utils.hasRole
@@ -18,9 +19,10 @@ class BillController(
     private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
+    @ResponseMessage("Bills retrieved successfully.")
     fun getAllBills(
         authentication: Authentication
-    ): ApiResponse<List<BillDto>> {
+    ): List<BillDto> {
         val isAdmin = authentication.hasRole("ADMIN")
         val isOperator = authentication.hasRole("OPERATOR")
 
@@ -30,26 +32,16 @@ class BillController(
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             billService.getBillsBySubscriberId(subscriber[0].id.toString())
         }).map { BillDto.fromEntity(it) }
-            .let {
-                ApiResponse.success(
-                    "Bills retrieved successfully.",
-                    it
-                )
-            }
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or @billSecurity.isOwnBill(#id, authentication)")
+    @ResponseMessage("Bill retrieved successfully.")
     fun getBillById(
         @PathVariable id: String
-    ): ApiResponse<BillDto> {
+    ): BillDto {
         return billService.getBillById(id).let {
             BillDto.fromEntity(it)
-        }.let {
-            ApiResponse.success(
-                "Bill retrieved successfully.",
-                it
-            )
         }
     }
 }

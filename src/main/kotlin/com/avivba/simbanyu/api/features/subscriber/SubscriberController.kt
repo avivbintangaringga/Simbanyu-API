@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.subscriber
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
 import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
 import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
@@ -23,60 +24,47 @@ class SubscriberController(
 ) {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
-    fun getAllSubscribers(): ApiResponse<List<SubscriberDto>> {
-        return subscriberService.getAllSubscribers().let {
-            ApiResponse.success(
-                "Subscribers retrieved successfully.",
-                it
-            )
-        }
+    @ResponseMessage("Subscribers retrieved successfully.")
+    fun getAllSubscribers(): List<SubscriberDto> {
+        return subscriberService.getAllSubscribers()
     }
 
     @GetMapping("/{id}")
     @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.data.user.username == principal.username")
+    @ResponseMessage("Subscriber retrieved successfully.")
     fun getSubscriberById(
         @PathVariable id: String
-    ): ApiResponse<SubscriberDto> {
-        return subscriberService.getSubscriberById(id).let {
-            ApiResponse.success(
-                "Subscriber retrieved successfully.",
-                it
-            )
-        }
+    ): SubscriberDto {
+        return subscriberService.getSubscriberById(id)
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Subscriber created successfully.")
     fun addSubscriber(
         @Valid @RequestBody body: AddSubscriberRequest
-    ): ApiResponse<SubscriberDto> {
+    ): SubscriberDto {
         return subscriberService.addSubscriber(body).let {
-            ApiResponse.success(
-                "Subscriber created successfully.",
-                SubscriberDto.fromEntity(it)
-            )
+            SubscriberDto.fromEntity(it)
         }
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Subscriber updated successfully.")
     fun updateSubscriber(
         @PathVariable id: String,
         @Valid @RequestBody body: UpdateSubscriberRequest
-    ): ApiResponse<SubscriberDto> {
+    ): SubscriberDto {
         return subscriberService.updateSubscriber(id, body).let {
-            ApiResponse.success(
-                "Subscriber updated successfully.",
-                SubscriberDto.fromEntity(it)
-            )
+            SubscriberDto.fromEntity(it)
         }
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Subscriber deleted successfully.")
     fun deleteSubscriber(
         @PathVariable id: String
-    ) = subscriberService.deleteSubscriberById(id).let {
-        ApiResponse.success(
-            "Subscriber deleted successfully.",
-            it
-        )
-    }
+    ) = subscriberService.deleteSubscriberById(id)
 }

@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.notification
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.notification.model.NotificationDto
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -16,18 +17,16 @@ class NotificationController(
     private val userRepository: UserRepository
 ) {
     @GetMapping
+    @ResponseMessage("Notifications retrieved successfully.")
     fun getUserNotifications(
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<List<NotificationDto>> {
+    ): List<NotificationDto> {
         val user = userRepository.findByUsername(userDetails.username)
         return notificationService.getUserNotifications(user)
             .let {
-                ApiResponse.success(
-                    "Notifications retrieved successfully.",
-                    it.map { notification ->
-                        NotificationDto.fromEntity(notification)
-                    }
-                )
+                it.map { notification ->
+                    NotificationDto.fromEntity(notification)
+                }
             }
     }
 }

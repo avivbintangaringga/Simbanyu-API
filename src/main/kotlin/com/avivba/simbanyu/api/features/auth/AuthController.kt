@@ -1,11 +1,13 @@
 package com.avivba.simbanyu.api.features.auth
 
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.auth.model.LoginRequest
 import com.avivba.simbanyu.api.features.auth.model.RefreshTokenRequest
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -14,11 +16,13 @@ class AuthController(
     private val authService: AuthService
 ) {
     @PostMapping("/login")
+    @ResponseMessage("Login successful.")
     fun login(
         @Valid @RequestBody body: LoginRequest
     ) = authService.authenticate(body)
 
     @PostMapping("/refresh")
+    @ResponseMessage("Access token refreshed successfully.")
     fun refresh(
         @Valid @RequestBody body: RefreshTokenRequest
     ) = authService.refreshAccessToken(body.token)

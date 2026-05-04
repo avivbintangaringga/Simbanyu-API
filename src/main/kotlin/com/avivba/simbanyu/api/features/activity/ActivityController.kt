@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.activity
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.activity.model.ActivityDto
 import com.avivba.simbanyu.api.features.user.UserRepository
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,22 +17,20 @@ class ActivityController(
     val activityService: ActivityService,
     val userRepository: UserRepository
 ) {
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
+    @ResponseMessage("Activities retrieved successfully.")
     fun getAllActivities(
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<List<ActivityDto>> {
+    ): List<ActivityDto> {
         val user = userRepository.findByUsername(userDetails.username)
 
         return activityService.getAllActivities(
             user
         ).let {
-            ApiResponse.success(
-                "Activities retrieved successfully.",
-                it.map { activity ->
-                    ActivityDto.fromEntity(activity)
-                }
-            )
+            it.map { activity ->
+                ActivityDto.fromEntity(activity)
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.midtrans
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.bill.BillRepository
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.midtrans.model.PaymentCallbackRequest
@@ -22,18 +23,15 @@ class MidtransController(
     @PostMapping("/callback")
     fun paymentCallback(
         @RequestBody body: PaymentCallbackRequest
-    ): ApiResponse<Unit> {
+    ) {
         midtransService.handleCallback(body)
-        return ApiResponse.success(
-            "Payment callback received successfully.",
-            Unit
-        )
     }
 
     @PostMapping
+    @ResponseMessage("Payment request submitted successfully.")
     fun requestPayment(
         @Valid @RequestBody body: RequestPaymentRequest,
-    ): ApiResponse<RequestPaymentResponse> {
+    ): RequestPaymentResponse {
         val billIds = body.billIds.map { UUID.fromString(it) }.toMutableList()
         val bills = billRepository.findBillsByIdIsIn(
             ids = billIds
@@ -52,9 +50,6 @@ class MidtransController(
             callbackUrl = body.callbackUrl
         )
 
-        return ApiResponse.success(
-            "Payment request initiated successfully.",
-            RequestPaymentResponse(paymentUrl)
-        )
+        return RequestPaymentResponse(paymentUrl)
     }
 }

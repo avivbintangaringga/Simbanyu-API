@@ -1,9 +1,11 @@
 package com.avivba.simbanyu.api.features.plans
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.plans.model.PlanDto
 import com.avivba.simbanyu.api.features.plans.model.PlanRequest
 import jakarta.validation.Valid
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,63 +21,52 @@ class PlanController(
     private val planService: PlanService
 ) {
     @GetMapping
-    fun getAllPlans(): ApiResponse<List<PlanDto>> {
+    @ResponseMessage("Plans retrieved successfully.")
+    fun getAllPlans(): List<PlanDto> {
         return planService.getAllPlans().map {
             PlanDto.fromEntity(it)
-        }.let {
-            ApiResponse.success(
-                "Plans retrieved successfully.",
-                it
-            )
         }
     }
 
     @GetMapping("/{id}")
+    @ResponseMessage("Plan retrieved successfully.")
     fun getPlanById(
         @PathVariable id: String
-    ): ApiResponse<PlanDto> {
+    ): PlanDto {
         return planService.getPlanById(id).let {
-            ApiResponse.success(
-                "Plan retrieved successfully.",
-                PlanDto.fromEntity(it)
-            )
+            PlanDto.fromEntity(it)
         }
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Plan created successfully.")
     fun addPlan(
         @Valid @RequestBody body: PlanRequest
-    ): ApiResponse<PlanDto> {
+    ): PlanDto {
         return planService.addPlan(body).let {
-            ApiResponse.success(
-                "Plan created successfully.",
-                PlanDto.fromEntity(it)
-            )
+            PlanDto.fromEntity(it)
         }
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Plan updated successfully.")
     fun updatePlan(
         @PathVariable id: String,
         @Valid @RequestBody body: PlanRequest
-    ): ApiResponse<PlanDto> {
+    ): PlanDto {
         return planService.updatePlan(id, body).let {
-            ApiResponse.success(
-                "Plan updated successfully.",
-                PlanDto.fromEntity(it)
-            )
+            PlanDto.fromEntity(it)
         }
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Plan deleted successfully.")
     fun deletePlan(
         @PathVariable id: String
-    ): ApiResponse<Unit> {
-        return planService.deletePlan(id).let {
-            ApiResponse.success(
-                "Plan deleted successfully.",
-                Unit
-            )
-        }
+    ) {
+        planService.deletePlan(id)
     }
 }

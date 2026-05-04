@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.usage
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.UsageDto
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
@@ -32,11 +33,12 @@ class UsageController(
     private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
+    @ResponseMessage("Usage retrieved successfully.")
     fun getSubscriberUsageWithLimit(
         @RequestParam("subscriberId") subscriberId: String?,
         @RequestParam("limit") limit: Int?,
         authentication: Authentication,
-    ): ApiResponse<List<UsageDto>> {
+    ): List<UsageDto> {
         val isAdmin = authentication.hasRole("ADMIN")
         val isOperator = authentication.hasRole("OPERATOR")
 
@@ -57,46 +59,36 @@ class UsageController(
                 subscriberId,
                 limit
             )
-        })
-            .map { UsageDto.fromEntity(it) }
-            .let {
-                ApiResponse.success(
-                    "Usage retrieved successfully.",
-                    it
-                )
-            }
+        }).map { UsageDto.fromEntity(it) }
     }
 
-    @PostMapping(
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
-    )
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
+    @ResponseMessage("Usage recorded successfully.")
     fun recordUsage(
         @Valid @RequestPart("data") data: UsageRequest,
         @RequestPart("image") image: MultipartFile,
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<UsageDto> {
+    ): UsageDto {
         val user = userRepository.findByUsername(userDetails.username)
         return usageService.recordUsage(
             data = data,
             image = image,
             user = user
         ).let {
-            ApiResponse.success(
-                "Usage recorded successfully.",
-                UsageDto.fromEntity(it)
-            )
+            UsageDto.fromEntity(it)
         }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
+    @ResponseMessage("Usage updated successfully.")
     fun updateRecord(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: UsageRequest,
         @RequestPart("image") image: MultipartFile?,
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ApiResponse<UsageDto> {
+    ): UsageDto {
         val user = userRepository.findByUsername(userDetails.username)
         return usageService.updateUsage(
             id = id,
@@ -104,23 +96,16 @@ class UsageController(
             image = image,
             user = user
         ).let {
-            ApiResponse.success(
-                "Usage updated successfully.",
-                UsageDto.fromEntity(it)
-            )
+            UsageDto.fromEntity(it)
         }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("Usage deleted successfully.")
     fun deleteRecord(
         @PathVariable id: String,
-    ): ApiResponse<Unit> {
-        return usageService.deleteUsage(id).let {
-            ApiResponse.success(
-                "Usage deleted successfully.",
-                Unit
-            )
-        }
+    ) {
+        usageService.deleteUsage(id)
     }
 }

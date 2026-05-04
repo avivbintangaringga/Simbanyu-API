@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.features.user
 
 import com.avivba.simbanyu.api.base.ApiResponse
+import com.avivba.simbanyu.api.config.ResponseMessage
 import com.avivba.simbanyu.api.features.user.model.AddUserRequest
 import com.avivba.simbanyu.api.features.user.model.UpdateUserRequest
 import com.avivba.simbanyu.api.features.user.model.UserDto
@@ -25,79 +26,64 @@ class UserController(
 ) {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    fun getAllUsers(): ApiResponse<List<UserDto>> {
+    @ResponseMessage("Users retrieved successfully.")
+    fun getAllUsers(): List<UserDto> {
         return userService.getAllUsers()
-            .let {
-                ApiResponse.success(
-                    "Users retrieved successfully.",
-                    it.map { user ->
-                        UserDto.fromEntity(user)
-                    }
-                )
+            .map { user ->
+                UserDto.fromEntity(user)
             }
     }
 
     @GetMapping("/{id}")
     @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.data.username == principal.username")
+    @ResponseMessage("User retrieved successfully.")
     fun getUserById(
         @PathVariable id: String
-    ): ApiResponse<UserDto> {
+    ): UserDto {
         return userService.getUserById(id)
             .let {
-                ApiResponse.success(
-                    "User retrieved successfully.",
-                    UserDto.fromEntity(it)
-                )
+                UserDto.fromEntity(it)
             }
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("User created successfully.")
     fun addUser(
         @Valid @RequestPart("data") data: AddUserRequest,
         @RequestPart("image") image: MultipartFile? = null
-    ): ApiResponse<UserDto> {
+    ): UserDto {
         return userService.addUser(
             data = data,
             image = image
-        )
-            .let {
-                ApiResponse.success(
-                    "User created successfully.",
-                    UserDto.fromEntity(it)
-                )
-            }
+        ).let {
+            UserDto.fromEntity(it)
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("User updated successfully.")
     fun updateUser(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: UpdateUserRequest,
         @RequestPart("image") image: MultipartFile? = null
-    ): ApiResponse<UserDto> {
+    ): UserDto {
         return userService.updateUser(
             id = id,
             data = data,
             image = image
-        )
-            .let {
-                ApiResponse.success(
-                    "User updated successfully.",
-                    UserDto.fromEntity(it)
-                )
-            }
+        ).let {
+            UserDto.fromEntity(it)
+        }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseMessage("User deleted successfully.")
     fun deleteUser(
         @PathVariable id: String
-    ): ApiResponse<Unit> {
+    ) {
         userService.deleteUser(id)
-        return ApiResponse.success(
-            "User deleted successfully.",
-            Unit
-        )
     }
 }
