@@ -29,9 +29,14 @@ class BillService(
     }
 
     fun getBillsBySubscriberId(
-        subscriberId: String
+        subscriberId: String,
+        activeOnly: Boolean = false,
     ): List<Bill> {
-        return billRepository.findBillsBySubscriber_Id(UUID.fromString(subscriberId))
+        return if (activeOnly) {
+            billRepository.findBillsBySubscriber_IdAndStatus(UUID.fromString(subscriberId), BillStatus.UNPAID)
+        } else {
+            billRepository.findBillsBySubscriber_Id(UUID.fromString(subscriberId))
+        }
     }
 
     @Transactional

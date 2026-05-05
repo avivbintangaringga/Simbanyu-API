@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -20,6 +21,7 @@ class BillController(
     @GetMapping
     @ResponseMessage("Bills retrieved successfully.")
     fun getAllBills(
+        @RequestParam("activeOnly", required = false) activeOnly: Boolean = false,
         authentication: Authentication
     ): List<BillDto> {
         val isAdmin = authentication.hasRole("ADMIN")
@@ -28,8 +30,9 @@ class BillController(
         return (if (isAdmin || isOperator) {
             billService.getAllBills()
         } else {
-            val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
-            billService.getBillsBySubscriberId(subscriber[0].id.toString())
+            val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name).firstOrNull()
+                ?: throw IllegalArgumentException("User is not a subscriber")
+            billService.getBillsBySubscriberId(subscriber.id.toString(), activeOnly = activeOnly)
         }).map { BillDto.fromEntity(it) }
     }
 
@@ -44,6 +47,5 @@ class BillController(
         }
     }
 
-    // TODO: get active bills
     // TODO: Download receipt
 }
