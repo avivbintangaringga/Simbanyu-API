@@ -26,6 +26,8 @@ class MidtransController(
         midtransService.handleCallback(body)
     }
 
+    // TODO: Pay by cash
+
     @PostMapping
     @ResponseMessage("Payment request submitted successfully.")
     fun requestPayment(

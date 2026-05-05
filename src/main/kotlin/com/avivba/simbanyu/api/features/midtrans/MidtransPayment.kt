@@ -11,8 +11,11 @@ class MidtransPayment(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: UUID? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     var orderId: String,
+
+    @Column(nullable = false)
+    var isCash: Boolean = false,
 
     @ManyToOne
     var bill: Bill,

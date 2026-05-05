@@ -43,4 +43,7 @@ class BillController(
             BillDto.fromEntity(it)
         }
     }
+
+    // TODO: get active bills
+    // TODO: Download receipt
 }
