@@ -1,7 +1,10 @@
 package com.avivba.simbanyu.api.features.report.model
 
+import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
+
 data class ReportDto(
     val id: String,
+    val subscriber: SubscriberDto,
     val address: String,
     val description: String,
     val status: String,
@@ -14,6 +17,7 @@ data class ReportDto(
     companion object {
         fun fromEntity(report: Report) = ReportDto(
             id = report.id.toString(),
+            subscriber = SubscriberDto.fromEntity(report.subscriber),
             address = report.address,
             description = report.description,
             status = report.status.name,
