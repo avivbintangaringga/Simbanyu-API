@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.auth.model.LoginResponseDto
 import com.avivba.simbanyu.api.features.auth.model.RefreshToken
 import com.avivba.simbanyu.api.features.auth.model.TokenResponseDto
 import com.avivba.simbanyu.api.features.user.UserRepository
+import com.avivba.simbanyu.api.features.user.model.UserDto
 import jakarta.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
@@ -48,7 +49,8 @@ class AuthService(
 
         return LoginResponseDto(
             accessToken = accessToken,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
+            user = UserDto.fromEntity(user)
         )
     }
 
