@@ -23,7 +23,7 @@ class SubscriberController(
     }
 
     @GetMapping("/{id}")
-    @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.data.user.username == principal.username")
+    @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.user.username == principal.username")
     @ResponseMessage("Subscriber retrieved successfully.")
     fun getSubscriberById(
         @PathVariable id: String
