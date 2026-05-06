@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.UsageDto
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
 import com.avivba.simbanyu.api.utils.hasRole
+import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -31,12 +32,16 @@ class UsageController(
             if (subscriberId == null) {
                 usageService.getAllUsage()
             } else {
+                val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
+                if (subscriber.isEmpty()) {
+                    throw EntityNotFoundException("User is not a subscriber")
+                }
                 usageService.getUsageBySubscriberId(subscriberId)
             }
         } else {
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
             if (subscriber.isEmpty()) {
-                throw IllegalArgumentException("User is not a subscriber")
+                throw EntityNotFoundException("User is not a subscriber")
             }
 
             val subscriberId = subscriber[0].id.toString()
