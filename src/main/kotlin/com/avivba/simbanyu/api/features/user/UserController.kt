@@ -26,8 +26,18 @@ class UserController(
             }
     }
 
+    @GetMapping("/me")
+    @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.username == principal.username")
+    @ResponseMessage("User retrieved successfully.")
+    fun getMe(authentication: Authentication): UserDto {
+        return userService.getUserByUsername(authentication.name)
+            .let {
+                UserDto.fromEntity(it)
+            }
+    }
+
     @GetMapping("/{id}")
-    @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.data.username == principal.username")
+    @PostAuthorize("hasRole('ADMIN') or hasRole('OPERATOR') or #returnObject.username == principal.username")
     @ResponseMessage("User retrieved successfully.")
     fun getUserById(
         @PathVariable id: String

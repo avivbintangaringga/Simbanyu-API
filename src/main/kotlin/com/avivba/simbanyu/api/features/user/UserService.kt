@@ -22,6 +22,9 @@ class UserService(
 ) {
     fun getAllUsers(): List<User> = userRepository.findAll()
 
+    fun getUserByUsername(username: String): User =
+        userRepository.findByUsername(username)
+
     fun getUserById(id: String): User =
         userRepository.findById(UUID.fromString(id)).orElseThrow()
 
