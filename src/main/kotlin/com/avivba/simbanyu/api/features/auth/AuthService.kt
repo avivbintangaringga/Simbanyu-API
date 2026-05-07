@@ -31,7 +31,8 @@ class AuthService(
         authManager.authenticate(token)
 
         val userDetails = userDetailsService.loadUserByUsername(body.username)
-        val user = userRepository.findByUsername(body.username)
+        val user = userRepository.findUserByUsernameOrPhoneNumber(body.username, body.username)
+            ?: throw AccessDeniedException("User not found")
 
         val accessToken = generateAccessToken(userDetails)
         val refreshToken = generateRefreshToken(userDetails)
