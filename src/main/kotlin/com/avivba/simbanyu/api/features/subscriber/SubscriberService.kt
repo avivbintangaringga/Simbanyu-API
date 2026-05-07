@@ -42,6 +42,10 @@ class SubscriberService(
         return rowToDto(row, currentMonth)
     }
 
+    fun findByUsername(username: String): Subscriber? {
+        return subscriberRepository.findSubscriberByUser_Username(username).firstOrNull()
+    }
+
     @Transactional
     fun addSubscriber(
         data: AddSubscriberRequest,

@@ -4,6 +4,7 @@ import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
 import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
 import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
+import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
@@ -20,6 +21,15 @@ class SubscriberController(
     @ResponseMessage("Subscribers retrieved successfully.")
     fun getAllSubscribers(): List<SubscriberDto> {
         return subscriberService.getAllSubscribers()
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('SUBSCRIBER')")
+    @ResponseMessage("Subscriber retrieved successfully")
+    fun getMe(authentication: Authentication): SubscriberDto {
+        return subscriberService.findByUsername(authentication.name)?.let {
+            SubscriberDto.fromEntity(it)
+        } ?: throw EntityNotFoundException("Subscriber not found")
     }
 
     @GetMapping("/{id}")
