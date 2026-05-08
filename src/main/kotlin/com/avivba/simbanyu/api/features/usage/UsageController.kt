@@ -36,7 +36,10 @@ class UsageController(
                 if (subscriber.isEmpty()) {
                     throw EntityNotFoundException("User is not a subscriber")
                 }
-                usageService.getUsageBySubscriberId(subscriberId)
+                usageService.getUsageBySubscriberId(
+                    subscriberId,
+                    limit
+                )
             }
         } else {
             val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
@@ -49,7 +52,9 @@ class UsageController(
                 subscriberId,
                 limit
             )
-        }).map { UsageDto.fromEntity(it) }
+        })
+            .sortedByDescending { it.createdAt }
+            .map { UsageDto.fromEntity(it) }
     }
 
     @PostMapping
