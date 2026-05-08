@@ -135,7 +135,7 @@ class SubscriberService(
             return SubscriberDto.fromEntity(
                 subscriber,
                 isRecorded,
-                lastRecordedAt?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()).toString() }
+                lastRecordedAt?.toString()
             )
         } else {
             throw EntityNotFoundException("Cannot find subscriber")
