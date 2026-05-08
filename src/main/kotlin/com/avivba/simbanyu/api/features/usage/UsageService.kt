@@ -7,6 +7,7 @@ import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.upload.UploadService
 import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
+import com.avivba.simbanyu.api.features.usage.model.UsageUpdateRequest
 import com.avivba.simbanyu.api.features.user.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -119,7 +120,7 @@ class UsageService(
     @Transactional
     fun updateUsage(
         id: String,
-        data: UsageRequest,
+        data: UsageUpdateRequest,
         image: MultipartFile?,
         username: String
     ): Usage {
@@ -150,7 +151,7 @@ class UsageService(
         notificationService.sendNotificationToUser(
             title = "Pembaruan Pencatatan Meter (${usage.subscriber.meterId})",
             body = "Pembaruan pencatatan meter berhasil dilakukan.",
-            user =  currentUser
+            user = currentUser
         )
 
         activityService.recordActivity(

@@ -4,6 +4,7 @@ import com.avivba.simbanyu.api.config.wrapper.ResponseMessage
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.UsageDto
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
+import com.avivba.simbanyu.api.features.usage.model.UsageUpdateRequest
 import com.avivba.simbanyu.api.utils.hasRole
 import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
@@ -27,6 +28,8 @@ class UsageController(
     ): List<UsageDto> {
         val isAdmin = authentication.hasRole("ADMIN")
         val isOperator = authentication.hasRole("OPERATOR")
+
+        // TODO: Maybe simplify this logic?
 
         return (if (isAdmin || isOperator) {
             if (subscriberId == null) {
@@ -79,7 +82,7 @@ class UsageController(
     @ResponseMessage("Usage updated successfully.")
     fun updateRecord(
         @PathVariable id: String,
-        @Valid @RequestPart("data") data: UsageRequest,
+        @Valid @RequestPart("data") data: UsageUpdateRequest,
         @RequestPart("image") image: MultipartFile?,
         authentication: Authentication
     ): UsageDto {
