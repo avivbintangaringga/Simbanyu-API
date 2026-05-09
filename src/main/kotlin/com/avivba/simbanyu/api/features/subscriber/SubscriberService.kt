@@ -36,10 +36,14 @@ class SubscriberService(
     }
 
     fun getSubscriberById(id: String): SubscriberDto {
-        val row = subscriberRepository.findByIdWithLastUsageDate(UUID.fromString(id))
+        println("ID: $id")
+        val result = subscriberRepository.findByIdWithLastUsageDate(UUID.fromString(id))
+
+        if (result.isEmpty()) throw EntityNotFoundException("Subscriber not found")
+
         // TODO: Find a better way to get the current month
         val currentMonth = YearMonth.now(ZoneId.systemDefault())
-        return rowToDto(row, currentMonth)
+        return rowToDto(result.first(), currentMonth)
     }
 
     fun findByUsername(username: String): Subscriber? {
