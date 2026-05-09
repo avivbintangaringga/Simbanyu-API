@@ -44,8 +44,8 @@ class AnnouncementService(
 
         activityService.recordActivity(
             user = user,
-            title = "Tambah Pengumuman",
-            body = "Pengumuman baru telah ditambahkan.",
+            title = "Tambah Pemberitahuan",
+            body = "Pemberitahuan baru telah ditambahkan.",
         )
 
         return announcement
@@ -69,8 +69,8 @@ class AnnouncementService(
 
         activityService.recordActivity(
             user = user,
-            title = "Update Pengumuman",
-            body = "Pengumuman telah diperbarui.",
+            title = "Update Pemberitahuan",
+            body = "Pemberitahuan telah diperbarui.",
         )
 
         return announcementRepository
@@ -83,8 +83,8 @@ class AnnouncementService(
         announcementRepository.delete(announcement)
         activityService.recordActivity(
             user = user,
-            title = "Hapus Pengumuman",
-            body = "Pengumuman telah dihapus.",
+            title = "Hapus Pemberitahuan",
+            body = "Pemberitahuan telah dihapus.",
         )
     }
 }
