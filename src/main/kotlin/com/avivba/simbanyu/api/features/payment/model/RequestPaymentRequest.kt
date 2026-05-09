@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.features.midtrans.model
+package com.avivba.simbanyu.api.features.payment.model
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty

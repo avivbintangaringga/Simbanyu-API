@@ -1,6 +1,6 @@
 package com.avivba.simbanyu.api.features.bill.model
 
-import com.avivba.simbanyu.api.features.midtrans.MidtransPayment
+import com.avivba.simbanyu.api.features.payment.model.Payment
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
 import com.avivba.simbanyu.api.features.usage.model.Usage
 import jakarta.persistence.*
@@ -47,7 +47,7 @@ class Bill(
         orphanRemoval = true,
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    var payments: MutableList<MidtransPayment> = emptyList(),
+    var payments: MutableList<Payment> = emptyList(),
 
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),

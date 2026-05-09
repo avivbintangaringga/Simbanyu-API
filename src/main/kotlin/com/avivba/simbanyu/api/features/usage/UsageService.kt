@@ -33,32 +33,11 @@ class UsageService(
     private val uploadService: UploadService,
     private val userRepository: UserRepository,
 ) {
-//    fun getAllUsage(): List<Usage> {
-//        return usageRepository.findUsagesByIsInitialOrderByCreatedAtDesc(isInitial = false)
-//    }
-
-//    fun getUsageBySubscriberId(
-//        subscriberId: String,
-//        limit: Int? = null,
-//    ): List<Usage> {
-//        return if (limit != null) {
-//            usageRepository.findUsageBySubscriberIdAndIsInitialOrderByCreatedAtDescWithLimit(
-//                id = UUID.fromString(subscriberId),
-//                isInitial = false,
-//                limit = limit
-//            )
-//        } else {
-//            usageRepository.findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
-//                subscriberId = UUID.fromString(subscriberId),
-//                isInitial = false
-//            )
-//        }
-//    }
-
     fun getAll(
         username: String,
         subscriberId: String?,
         limit: Int?,
+        includeInitial: Boolean?,
     ): List<Usage> {
         val user = userRepository.findByUsername(username)
         var subscriberId = subscriberId
@@ -82,6 +61,7 @@ class UsageService(
 
         val specs = UsageSpecs.filterBy(
             subscriberId = subscriberId,
+            includeInitial = includeInitial ?: false
         )
 
         return usageRepository.findAll(specs, page).content

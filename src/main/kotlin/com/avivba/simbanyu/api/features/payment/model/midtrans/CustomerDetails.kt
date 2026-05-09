@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.features.midtrans.model
+package com.avivba.simbanyu.api.features.payment.model.midtrans
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

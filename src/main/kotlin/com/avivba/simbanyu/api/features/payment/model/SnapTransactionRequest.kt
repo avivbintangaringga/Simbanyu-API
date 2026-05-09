@@ -1,5 +1,7 @@
-package com.avivba.simbanyu.api.features.midtrans.model
+package com.avivba.simbanyu.api.features.payment.model
 
+import com.avivba.simbanyu.api.features.payment.model.midtrans.CustomerDetails
+import com.avivba.simbanyu.api.features.payment.model.midtrans.TransactionDetails
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SnapTransactionRequest(

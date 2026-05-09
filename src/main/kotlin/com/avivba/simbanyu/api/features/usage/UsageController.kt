@@ -21,12 +21,14 @@ class UsageController(
     fun getAll(
         @RequestParam("subscriberId") subscriberId: String? = null,
         @RequestParam("limit") limit: Int? = null,
+        @RequestParam("includeInitial") includeInitial: Boolean? = null,
         authentication: Authentication,
     ): List<UsageDto> {
         return usageService.getAll(
             authentication.name,
             subscriberId,
-            limit
+            limit,
+            includeInitial
         ).map { UsageDto.fromEntity(it) }
     }
 

@@ -1,4 +1,4 @@
-package com.avivba.simbanyu.api.features.midtrans.model
+package com.avivba.simbanyu.api.features.payment.model
 
 data class ItemDetails(
     val id: String,

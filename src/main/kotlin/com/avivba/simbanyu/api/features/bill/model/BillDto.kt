@@ -1,5 +1,6 @@
 package com.avivba.simbanyu.api.features.bill.model
 
+import com.avivba.simbanyu.api.features.payment.model.PaymentDto
 import com.avivba.simbanyu.api.utils.getMonthName
 import com.avivba.simbanyu.api.utils.getYear
 
@@ -9,6 +10,7 @@ data class BillDto(
     val amount: Double,
     val status: String,
     val items: List<BillItemDto>,
+    val payments: List<PaymentDto>,
     val createdAt: String,
     val updatedAt: String,
 ) {
@@ -20,6 +22,9 @@ data class BillDto(
             status = bill.status.name,
             items = bill.billItems.map {
                 BillItemDto.fromEntity(it)
+            },
+            payments = bill.payments.map {
+                PaymentDto.fromEntity(it)
             },
             createdAt = bill.createdAt.toString(),
             updatedAt = bill.updatedAt.toString(),

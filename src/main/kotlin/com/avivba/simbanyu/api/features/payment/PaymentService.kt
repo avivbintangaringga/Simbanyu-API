@@ -1,11 +1,13 @@
-package com.avivba.simbanyu.api.features.midtrans
+package com.avivba.simbanyu.api.features.payment
 
 import com.avivba.simbanyu.api.config.properties.MidtransProperties
 import com.avivba.simbanyu.api.features.bill.BillRepository
 import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
-import com.avivba.simbanyu.api.features.midtrans.model.*
+import com.avivba.simbanyu.api.features.payment.model.*
 import com.avivba.simbanyu.api.features.notification.NotificationService
+import com.avivba.simbanyu.api.features.payment.model.midtrans.CustomerDetails
+import com.avivba.simbanyu.api.features.payment.model.midtrans.TransactionDetails
 import com.avivba.simbanyu.api.utils.getMonthName
 import com.avivba.simbanyu.api.utils.getYear
 import com.avivba.simbanyu.api.utils.sha512
@@ -19,8 +21,8 @@ import org.springframework.web.client.body
 import java.util.*
 
 @Service
-class MidtransService(
-    private val midtransPaymentRepository: MidtransPaymentRepository,
+class PaymentService(
+    private val paymentRepository: PaymentRepository,
     private val midtransProperties: MidtransProperties,
     private val notificationService: NotificationService,
     private val billRepository: BillRepository,
@@ -32,12 +34,22 @@ class MidtransService(
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ${getAuthString()}")
         .build()
 
-    fun requestSnapPayment(
-        bills: List<Bill>,
-        callbackUrl: String
+    fun requestPayment(
+        billIds: List<String>,
+        callbackUrl: String,
     ): String {
-        if (bills.isEmpty())
-            throw IllegalArgumentException("Bills cannot be empty")
+        val billIds = billIds.map { UUID.fromString(it) }.toMutableList()
+        val bills = billRepository.findBillsByIdIsIn(
+            ids = billIds
+        )
+
+        if (bills.isEmpty()) {
+            throw IllegalArgumentException("Bills is empty or not found.")
+        }
+
+        if (bills.any { it.status != BillStatus.UNPAID }) {
+            throw IllegalArgumentException("Bills must be unpaid to request payment.")
+        }
 
         val orderId = createTransactionId()
 
@@ -84,13 +96,14 @@ class MidtransService(
             })
 
         val payments = bills.map { bill ->
-            MidtransPayment(
+            Payment(
                 orderId = orderId,
-                bill = bill
+                bill = bill,
+                paymentUrl = response.redirectUrl,
             )
         }
 
-        midtransPaymentRepository.saveAll(payments)
+        paymentRepository.saveAll(payments)
 
         return response.redirectUrl
     }
@@ -109,7 +122,7 @@ class MidtransService(
             throw IllegalArgumentException("Invalid notification signature")
         }
 
-        val payments = midtransPaymentRepository.findMidtransPaymentByOrderId(data.orderId)
+        val payments = paymentRepository.findPaymentByOrderId(data.orderId)
 
         if (payments.isEmpty()) {
             throw EntityNotFoundException("Payment not found")
@@ -122,12 +135,24 @@ class MidtransService(
 
         when (data.transactionStatus) {
             "pending" -> {
-                // Do nothing for now
+                val updatedPayments = payments.map {
+                    it.status = PaymentStatus.PENDING
+                    it
+                }
+                paymentRepository.saveAll(updatedPayments)
             }
 
             "capture", "settlement" -> {
                 bills.forEach { bill -> bill.status = BillStatus.PAID }
                 billRepository.saveAll(bills)
+
+                val updatedPayments = payments.map {
+                    it.paymentType = data.paymentType
+                    it.status = PaymentStatus.SUCCESS
+                    it
+                }
+
+                paymentRepository.saveAll(updatedPayments)
 
                 notificationService.sendNotificationToUser(
                     title = "Tagihan Selesai Dibayar",
@@ -140,6 +165,13 @@ class MidtransService(
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
 
+                val updatedPayments = payments.map {
+                    it.status = PaymentStatus.FAILED
+                    it
+                }
+
+                paymentRepository.saveAll(updatedPayments)
+
                 notificationService.sendNotificationToUser(
                     title = "Tagihan Gagal Dibayar",
                     body = "Tagihan bulan ${months} gagal dibayarkan",
@@ -150,6 +182,12 @@ class MidtransService(
             "refund", "partial_refund" -> {
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
+
+                val updatedPayments = payments.map {
+                    it.status = PaymentStatus.REFUND
+                    it
+                }
+                paymentRepository.saveAll(updatedPayments)
 
                 notificationService.sendNotificationToUser(
                     title = "Uang Dikembalikan",
