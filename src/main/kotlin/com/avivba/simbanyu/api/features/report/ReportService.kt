@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.report
 
 import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.notification.NotificationService
+import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.report.model.AddReportRequest
 import com.avivba.simbanyu.api.features.report.model.HandlingRequest
 import com.avivba.simbanyu.api.features.report.model.Report
@@ -56,6 +57,18 @@ class ReportService(
             title = "Laporan Pengaduan",
             body = "Laporan pengaduan anda telah dikirimkan, mohon tunggu penanganan dari kami.",
             user = subscriber.user
+        )
+
+        notificationsService.sendBroadcastNotification(
+            title = "Laporan Pengaduan",
+            body = "Laporan pengaduan baru telah diterima dari ${subscriber.user.name}",
+            BroadcastTopic.OPERATOR
+        )
+
+        notificationsService.sendBroadcastNotification(
+            title = "Laporan Pengaduan",
+            body = "Laporan pengaduan baru telah diterima dari ${subscriber.user.name}",
+            BroadcastTopic.ADMIN
         )
 
         return reportRepository.save(report)
