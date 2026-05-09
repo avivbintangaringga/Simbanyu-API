@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.features.plans.PlanRepository
 import com.avivba.simbanyu.api.features.subscriber.model.AddSubscriberRequest
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
 import com.avivba.simbanyu.api.features.subscriber.model.SubscriberDto
+import com.avivba.simbanyu.api.features.subscriber.model.SubscriberUsageProjection
 import com.avivba.simbanyu.api.features.subscriber.model.UpdateSubscriberRequest
 import com.avivba.simbanyu.api.features.usage.UsageService
 import com.avivba.simbanyu.api.features.user.UserRepository
@@ -29,21 +30,18 @@ class SubscriberService(
     private val activityService: ActivityService,
 ) {
     fun getAllSubscribers(): List<SubscriberDto> {
-        val results = subscriberRepository.findAllWithLastUsageDate()
+        val results = subscriberRepository.findAllWithLastUsage()
         val currentMonth = YearMonth.now(ZoneId.systemDefault())
 
         return results.map { rowToDto(it, currentMonth) }
     }
 
     fun getSubscriberById(id: String): SubscriberDto {
-        println("ID: $id")
-        val result = subscriberRepository.findByIdWithLastUsageDate(UUID.fromString(id))
+        val result = subscriberRepository.findWithLastUsageById(UUID.fromString(id))
+            ?: throw EntityNotFoundException("Subscriber not found")
 
-        if (result.isEmpty()) throw EntityNotFoundException("Subscriber not found")
-
-        // TODO: Find a better way to get the current month
         val currentMonth = YearMonth.now(ZoneId.systemDefault())
-        return rowToDto(result.first(), currentMonth)
+        return rowToDto(result, currentMonth)
     }
 
     fun findByUsername(username: String): Subscriber? {
@@ -127,22 +125,20 @@ class SubscriberService(
         )
     }
 
-    private fun rowToDto(row: Array<Any?>, currentMonth: YearMonth): SubscriberDto {
-        if (row[0] is Subscriber && row[1] is Instant?) {
-            val subscriber = row[0] as Subscriber
-            val lastRecordedAt = row[1] as Instant?
 
-            val isRecorded = lastRecordedAt?.let {
-                currentMonth == YearMonth.from(it.atZone(ZoneId.systemDefault()))
-            } ?: false
+    private fun rowToDto(row: SubscriberUsageProjection, currentMonth: YearMonth): SubscriberDto {
+        val subscriber = row.subscriber
+        val lastUsage = row.lastUsage
 
-            return SubscriberDto.fromEntity(
-                subscriber,
-                isRecorded,
-                lastRecordedAt?.toString()
-            )
-        } else {
-            throw EntityNotFoundException("Cannot find subscriber")
-        }
+        val isRecorded = lastUsage?.let {
+            currentMonth == YearMonth.from(
+                it.createdAt.atZone(ZoneId.systemDefault())
+            ) && !it.isInitial
+        } ?: false
+        return SubscriberDto.fromEntity(
+            subscriber,
+            isRecorded,
+            lastUsage?.createdAt?.toString()
+        )
     }
 }
