@@ -56,10 +56,11 @@ class NotificationService(
         body: String,
         user: User
     ) {
+        notificationRepository.save(Notification(title = title, body = body, user = user))
+
         val token = user.fcmToken?.token ?: return
         sendPushNotification(title, body, token)
         println("Notification to user (${user.username}): $title - $body")
-        notificationRepository.save(Notification(title = title, body = body, user = user))
     }
 
     fun getUserNotifications(
