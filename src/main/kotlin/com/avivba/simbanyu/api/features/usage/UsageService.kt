@@ -124,7 +124,7 @@ class UsageService(
         val currentYearMonth = YearMonth.from(Instant.now().atZone(ZoneId.systemDefault()))
         val previousYearMonth = YearMonth.from(previousUsage.createdAt.atZone(ZoneId.systemDefault()))
 
-        if (currentYearMonth == previousYearMonth) {
+        if (currentYearMonth == previousYearMonth && !previousUsage.isInitial) {
             throw IllegalArgumentException("Current month is already recorded")
         }
 
