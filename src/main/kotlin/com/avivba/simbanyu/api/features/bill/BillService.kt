@@ -6,38 +6,82 @@ import com.avivba.simbanyu.api.features.bill.model.BillItem
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.plans.model.Plan
+import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.subscriber.model.Subscriber
 import com.avivba.simbanyu.api.features.usage.model.Usage
+import com.avivba.simbanyu.api.features.user.UserRepository
+import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.avivba.simbanyu.api.utils.getMonthName
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Limit
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class BillService(
+    private val userRepository: UserRepository,
+    private val subscriberRepository: SubscriberRepository,
     private val billRepository: BillRepository,
     private val billItemRepository: BillItemRepository,
     private val notificationService: NotificationService,
     private val priceProperties: PriceProperties
 ) {
-    fun getAllBills(): List<Bill> {
-        return billRepository.findAll()
+    fun getAll(
+        username: String,
+        subscriberId: String?,
+        limit: Int?,
+        activeOnly: Boolean?,
+    ): List<Bill> {
+        val user = userRepository.findByUsername(username)
+        var subscriberId = subscriberId
+
+        if (user.role == UserRole.SUBSCRIBER) {
+            val subscriber = subscriberRepository.findSubscriberByUser_Username(username).firstOrNull()
+                ?: throw IllegalArgumentException("User is not a subscriber")
+
+            if (subscriberId != null && subscriberId != subscriber.id.toString()) {
+                throw AccessDeniedException("Cannot access other subscriber's data")
+            }
+
+            subscriberId = subscriber.id.toString()
+        }
+
+        val sort = Sort.by(Sort.Direction.DESC, "createdAt")
+
+        val page = limit?.let {
+            PageRequest.of(0, limit, sort)
+        } ?: Pageable.unpaged(sort)
+
+        val specs = BillSpecs.filterBy(
+            subscriberId = subscriberId,
+            activeOnly = activeOnly,
+        )
+
+        return billRepository.findAll(specs, page).content
     }
 
+    //    fun getAllBills(): List<Bill> {
+//        return billRepository.findAll()
+//    }
+//
     fun getBillById(id: String): Bill {
         return billRepository.findById(UUID.fromString(id)).orElseThrow()
     }
 
-    fun getBillsBySubscriberId(
-        subscriberId: String,
-        activeOnly: Boolean = false,
-    ): List<Bill> {
-        return if (activeOnly) {
-            billRepository.findBillsBySubscriber_IdAndStatus(UUID.fromString(subscriberId), BillStatus.UNPAID)
-        } else {
-            billRepository.findBillsBySubscriber_Id(UUID.fromString(subscriberId))
-        }
-    }
+//    fun getBillsBySubscriberId(
+//        subscriberId: String,
+//        activeOnly: Boolean = false,
+//    ): List<Bill> {
+//        return if (activeOnly) {
+//            billRepository.findBillsBySubscriber_IdAndStatus(UUID.fromString(subscriberId), BillStatus.UNPAID)
+//        } else {
+//            billRepository.findBillsBySubscriber_Id(UUID.fromString(subscriberId))
+//        }
+//    }
 
     @Transactional
     fun generateBill(
@@ -94,42 +138,42 @@ class BillService(
         return billRepository.save(bill)
     }
 
-    fun updateBillStatus(
-        bill: Bill,
-        status: BillStatus,
-    ): Bill {
-        bill.status = status
-        val updatedBill = billRepository.save(bill)
-        val user = bill.subscriber.user
-
-        when (status) {
-            BillStatus.PAID -> {
-                notificationService.sendNotificationToUser(
-                    title = "Tagihan Selesai Dibayar",
-                    body = "Tagihan bulan ${updatedBill.createdAt.getMonthName()} telah berhasil dibayar",
-                    user = user
-                )
-            }
-
-            BillStatus.UNPAID -> {
-                notificationService.sendNotificationToUser(
-                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
-                    body = "Anda belum melakukan pembayaran, segera lakukan pembayaran",
-                    user = user
-                )
-            }
-
-            BillStatus.PENDING -> {
-                notificationService.sendNotificationToUser(
-                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
-                    body = "Permintaan pembayaran telah dibuat, segera lakukan pembayaran",
-                    user = user
-                )
-            }
-        }
-
-        return updatedBill
-    }
+//    fun updateBillStatus(
+//        bill: Bill,
+//        status: BillStatus,
+//    ): Bill {
+//        bill.status = status
+//        val updatedBill = billRepository.save(bill)
+//        val user = bill.subscriber.user
+//
+//        when (status) {
+//            BillStatus.PAID -> {
+//                notificationService.sendNotificationToUser(
+//                    title = "Tagihan Selesai Dibayar",
+//                    body = "Tagihan bulan ${updatedBill.createdAt.getMonthName()} telah berhasil dibayar",
+//                    user = user
+//                )
+//            }
+//
+//            BillStatus.UNPAID -> {
+//                notificationService.sendNotificationToUser(
+//                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
+//                    body = "Anda belum melakukan pembayaran, segera lakukan pembayaran",
+//                    user = user
+//                )
+//            }
+//
+//            BillStatus.PENDING -> {
+//                notificationService.sendNotificationToUser(
+//                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
+//                    body = "Permintaan pembayaran telah dibuat, segera lakukan pembayaran",
+//                    user = user
+//                )
+//            }
+//        }
+//
+//        return updatedBill
+//    }
 
     private fun createBillItems(
         plan: Plan,

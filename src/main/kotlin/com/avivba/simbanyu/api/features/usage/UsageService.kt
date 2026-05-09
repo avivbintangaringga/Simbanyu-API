@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api.features.usage
 
 import com.avivba.simbanyu.api.features.activity.ActivityService
 import com.avivba.simbanyu.api.features.bill.BillService
+import com.avivba.simbanyu.api.features.bill.BillSpecs
 import com.avivba.simbanyu.api.features.notification.NotificationService
 import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.upload.UploadService
@@ -9,9 +10,17 @@ import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
 import com.avivba.simbanyu.api.features.usage.model.UsageUpdateRequest
 import com.avivba.simbanyu.api.features.user.UserRepository
+import com.avivba.simbanyu.api.features.user.model.UserRole
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.time.Instant
+import java.time.YearMonth
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -24,26 +33,58 @@ class UsageService(
     private val uploadService: UploadService,
     private val userRepository: UserRepository,
 ) {
-    fun getAllUsage(): List<Usage> {
-        return usageRepository.findUsagesByIsInitialOrderByCreatedAtDesc(isInitial = false)
-    }
+//    fun getAllUsage(): List<Usage> {
+//        return usageRepository.findUsagesByIsInitialOrderByCreatedAtDesc(isInitial = false)
+//    }
 
-    fun getUsageBySubscriberId(
-        subscriberId: String,
-        limit: Int? = null,
+//    fun getUsageBySubscriberId(
+//        subscriberId: String,
+//        limit: Int? = null,
+//    ): List<Usage> {
+//        return if (limit != null) {
+//            usageRepository.findUsageBySubscriberIdAndIsInitialOrderByCreatedAtDescWithLimit(
+//                id = UUID.fromString(subscriberId),
+//                isInitial = false,
+//                limit = limit
+//            )
+//        } else {
+//            usageRepository.findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
+//                subscriberId = UUID.fromString(subscriberId),
+//                isInitial = false
+//            )
+//        }
+//    }
+
+    fun getAll(
+        username: String,
+        subscriberId: String?,
+        limit: Int?,
     ): List<Usage> {
-        return if (limit != null) {
-            usageRepository.findUsageBySubscriberIdAndIsInitialOrderByCreatedAtDescWithLimit(
-                id = UUID.fromString(subscriberId),
-                isInitial = false,
-                limit = limit
-            )
-        } else {
-            usageRepository.findUsagesBySubscriberIdAndIsInitialOrderByCreatedAtDesc(
-                subscriberId = UUID.fromString(subscriberId),
-                isInitial = false
-            )
+        val user = userRepository.findByUsername(username)
+        var subscriberId = subscriberId
+
+        if (user.role == UserRole.SUBSCRIBER) {
+            val subscriber = subscriberRepository.findSubscriberByUser_Username(username).firstOrNull()
+                ?: throw IllegalArgumentException("User is not a subscriber")
+
+            if (subscriberId != null && subscriberId != subscriber.id.toString()) {
+                throw AccessDeniedException("Cannot access other subscriber's data")
+            }
+
+            subscriberId = subscriber.id.toString()
         }
+
+        val sort = Sort.by(Sort.Direction.DESC, "createdAt")
+
+        val page = limit?.let {
+            PageRequest.of(0, limit, sort)
+        } ?: Pageable.unpaged(sort)
+
+        val specs = UsageSpecs.filterBy(
+            subscriberId = subscriberId,
+        )
+
+        return usageRepository.findAll(specs, page).content
     }
 
     fun addInitialUsage(
@@ -80,7 +121,12 @@ class UsageService(
             throw IllegalArgumentException("Current meter must be greater than previous meter")
         }
 
-        // TODO: Check if current month is already recorded
+        val currentYearMonth = YearMonth.from(Instant.now().atZone(ZoneId.systemDefault()))
+        val previousYearMonth = YearMonth.from(previousUsage.createdAt.atZone(ZoneId.systemDefault()))
+
+        if (currentYearMonth == previousYearMonth) {
+            throw IllegalArgumentException("Current month is already recorded")
+        }
 
         val upload = uploadService.saveMultipart(image)
 

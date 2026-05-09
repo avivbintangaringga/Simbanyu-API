@@ -5,8 +5,6 @@ import com.avivba.simbanyu.api.features.subscriber.SubscriberRepository
 import com.avivba.simbanyu.api.features.usage.model.UsageDto
 import com.avivba.simbanyu.api.features.usage.model.UsageRequest
 import com.avivba.simbanyu.api.features.usage.model.UsageUpdateRequest
-import com.avivba.simbanyu.api.utils.hasRole
-import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
@@ -17,47 +15,19 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api/usages")
 class UsageController(
     private val usageService: UsageService,
-    private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
     @ResponseMessage("Usage retrieved successfully.")
-    fun getSubscriberUsageWithLimit(
-        @RequestParam("subscriberId") subscriberId: String?,
-        @RequestParam("limit") limit: Int?,
+    fun getAll(
+        @RequestParam("subscriberId") subscriberId: String? = null,
+        @RequestParam("limit") limit: Int? = null,
         authentication: Authentication,
     ): List<UsageDto> {
-        val isAdmin = authentication.hasRole("ADMIN")
-        val isOperator = authentication.hasRole("OPERATOR")
-
-        // TODO: Maybe simplify this logic?
-
-        return (if (isAdmin || isOperator) {
-            if (subscriberId == null) {
-                usageService.getAllUsage()
-            } else {
-                val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
-                if (subscriber.isEmpty()) {
-                    throw EntityNotFoundException("User is not a subscriber")
-                }
-                usageService.getUsageBySubscriberId(
-                    subscriberId,
-                    limit
-                )
-            }
-        } else {
-            val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name)
-            if (subscriber.isEmpty()) {
-                throw EntityNotFoundException("User is not a subscriber")
-            }
-
-            val subscriberId = subscriber[0].id.toString()
-            usageService.getUsageBySubscriberId(
-                subscriberId,
-                limit
-            )
-        })
-            .sortedByDescending { it.createdAt }
-            .map { UsageDto.fromEntity(it) }
+        return usageService.getAll(
+            authentication.name,
+            subscriberId,
+            limit
+        ).map { UsageDto.fromEntity(it) }
     }
 
     @PostMapping

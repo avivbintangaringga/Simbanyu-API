@@ -16,24 +16,21 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/bills")
 class BillController(
     private val billService: BillService,
-    private val subscriberRepository: SubscriberRepository,
 ) {
     @GetMapping
     @ResponseMessage("Bills retrieved successfully.")
     fun getAllBills(
-        @RequestParam("activeOnly", required = false) activeOnly: Boolean = false,
+        @RequestParam("subscriberId") subscriberId: String? = null,
+        @RequestParam("limit") limit: Int? = null,
+        @RequestParam("activeOnly") activeOnly: Boolean? = null,
         authentication: Authentication
     ): List<BillDto> {
-        val isAdmin = authentication.hasRole("ADMIN")
-        val isOperator = authentication.hasRole("OPERATOR")
-
-        return (if (isAdmin || isOperator) {
-            billService.getAllBills()
-        } else {
-            val subscriber = subscriberRepository.findSubscriberByUser_Username(authentication.name).firstOrNull()
-                ?: throw IllegalArgumentException("User is not a subscriber")
-            billService.getBillsBySubscriberId(subscriber.id.toString(), activeOnly = activeOnly)
-        }).map { BillDto.fromEntity(it) }
+        return billService.getAll(
+            authentication.name,
+            subscriberId,
+            limit,
+            activeOnly
+        ).map { BillDto.fromEntity(it) }
     }
 
     @GetMapping("/{id}")

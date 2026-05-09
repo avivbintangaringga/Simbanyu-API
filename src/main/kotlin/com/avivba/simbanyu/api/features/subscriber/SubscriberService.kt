@@ -14,8 +14,6 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 import java.util.*
@@ -126,12 +124,12 @@ class SubscriberService(
     }
 
 
-    private fun rowToDto(row: SubscriberUsageProjection, currentMonth: YearMonth): SubscriberDto {
+    private fun rowToDto(row: SubscriberUsageProjection, currentYearMonth: YearMonth): SubscriberDto {
         val subscriber = row.subscriber
         val lastUsage = row.lastUsage
 
         val isRecorded = lastUsage?.let {
-            currentMonth == YearMonth.from(
+            currentYearMonth == YearMonth.from(
                 it.createdAt.atZone(ZoneId.systemDefault())
             ) && !it.isInitial
         } ?: false
