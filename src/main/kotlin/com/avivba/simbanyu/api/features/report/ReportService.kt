@@ -64,14 +64,19 @@ class ReportService(
     fun handleReport(
         id: String,
         data: HandlingRequest,
-        image: MultipartFile,
+        image: MultipartFile?,
         username: String,
     ): Report {
         val user = userRepository.findByUsername(username)
         val report = reportRepository.findById(UUID.fromString(id)).orElseThrow()
-        val image = uploadService.saveMultipart(image)
 
-        report.handlingEvidenceImage = image
+        if (image != null) {
+            if (report.handlingEvidenceImage != null) {
+                uploadService.deleteFile(report.handlingEvidenceImage!!)
+            }
+            report.handlingEvidenceImage = uploadService.saveMultipart(image)
+        }
+
         report.status = data.status
         report.operatorNotes = data.operatorNotes
 

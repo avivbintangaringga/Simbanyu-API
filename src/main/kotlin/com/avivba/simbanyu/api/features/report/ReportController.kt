@@ -65,7 +65,7 @@ class ReportController(
     fun handleReport(
         @PathVariable id: String,
         @Valid @RequestPart("data") data: HandlingRequest,
-        @RequestPart("image") image: MultipartFile,
+        @RequestPart("image") image: MultipartFile?,
         authentication: Authentication
     ): ReportDto {
         return reportService.handleReport(
