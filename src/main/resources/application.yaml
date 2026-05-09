@@ -22,10 +22,11 @@ price:
 
 file-storage:
   upload-dir: uploads
-  max-file-size: 5242880 # 5MB
+  max-file-size: 10485760 # 10MB
   allowed-file-types:
     - image/jpeg
     - image/png
+    - image/webp
 
 midtrans:
   api-url: https://api.sandbox.midtrans.com/v2/
