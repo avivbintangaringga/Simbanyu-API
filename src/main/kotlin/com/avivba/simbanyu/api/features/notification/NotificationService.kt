@@ -8,6 +8,7 @@ import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 
 @Service
@@ -66,7 +67,7 @@ class NotificationService(
     fun getUserNotifications(
         user: User
     ): List<Notification> {
-        return notificationRepository.findNotificationsByUser(user)
+        return notificationRepository.findNotificationsByUser(user, Limit.of(20))
     }
 
     private fun sendPushNotificationToTopic(
