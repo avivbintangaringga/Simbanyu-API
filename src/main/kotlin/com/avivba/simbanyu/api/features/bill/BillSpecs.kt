@@ -25,9 +25,15 @@ class BillSpecs {
                 activeOnly?.let {
                     if (activeOnly) {
                         predicates.add(
-                            cb.equal(
-                                root.get<BillStatus>("status"),
-                                BillStatus.UNPAID
+                            cb.or(
+                                cb.equal(
+                                    root.get<BillStatus>("status"),
+                                    BillStatus.UNPAID
+                                ),
+                                cb.equal(
+                                    root.get<BillStatus>("status"),
+                                    BillStatus.PENDING
+                                )
                             )
                         )
                     }
