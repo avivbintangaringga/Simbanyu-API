@@ -72,6 +72,7 @@ class AuthService(
         }
     }
 
+    @Transactional
     fun logout(username: String) {
         val user = userRepository.findByUsername(username)
         refreshTokenRepository.deleteRefreshTokensByUser(user)
