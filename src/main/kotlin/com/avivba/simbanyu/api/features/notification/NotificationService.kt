@@ -5,6 +5,9 @@ import com.avivba.simbanyu.api.features.notification.model.Notification
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.model.UserRole
+import com.google.firebase.messaging.AndroidConfig
+import com.google.firebase.messaging.AndroidNotification
+import com.google.firebase.messaging.FcmOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import jakarta.transaction.Transactional
@@ -76,11 +79,30 @@ class NotificationService(
         topic: String
     ) {
         val message = Message.builder()
+            .setNotification(
+                com.google.firebase.messaging.Notification.builder()
+                    .setTitle(title)
+                    .setBody(body)
+                    .build()
+            )
             .putData("title", title)
             .putData("body", body)
+            .setAndroidConfig(
+                AndroidConfig.builder()
+                    .setPriority(AndroidConfig.Priority.HIGH)
+                    .setNotification(
+                        AndroidNotification.builder()
+                            .setTitle(title)
+                            .setBody(body)
+                            .setPriority(AndroidNotification.Priority.HIGH)
+                            .build()
+                    )
+                    .build()
+            )
             .setTopic(topic)
             .build()
 
+        println("Sending topic message to: $topic")
         val response = firebaseMessaging.send(message)
         println("Successfully sent topic message: $response")
     }
@@ -92,10 +114,29 @@ class NotificationService(
     ) {
         val message = Message.builder()
             .setToken(token)
+            .setNotification(
+                com.google.firebase.messaging.Notification.builder()
+                    .setTitle(title)
+                    .setBody(body)
+                    .build()
+            )
             .putData("title", title)
             .putData("body", body)
+            .setAndroidConfig(
+                AndroidConfig.builder()
+                    .setPriority(AndroidConfig.Priority.HIGH)
+                    .setNotification(
+                        AndroidNotification.builder()
+                            .setTitle(title)
+                            .setBody(body)
+                            .setPriority(AndroidNotification.Priority.HIGH)
+                            .build()
+                    )
+                    .build()
+            )
             .build()
 
+        println("Sending message to: $token")
         val response = firebaseMessaging.send(message)
         println("Successfully sent message: $response")
     }
