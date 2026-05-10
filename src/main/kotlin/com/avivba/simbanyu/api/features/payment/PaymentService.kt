@@ -77,7 +77,19 @@ class PaymentService(
             )
         }
 
-        return paymentRepository.saveAll(result)
+        val paymentResult = paymentRepository.saveAll(result)
+
+        val months = bills.map {
+            "${it.createdAt.getMonthName()} ${it.createdAt.getYear()}"
+        }.distinct().joinToString(", ")
+
+        notificationService.sendNotificationToUser(
+            title = "Tagihan Selesai Dibayar",
+            body = "Tagihan bulan ${months} telah berhasil dibayar",
+            user = bills[0].subscriber.user
+        )
+
+        return paymentResult
     }
 
     fun requestPayment(
