@@ -13,6 +13,7 @@ import com.avivba.simbanyu.api.utils.getYear
 import com.avivba.simbanyu.api.utils.sha512
 import com.github.f4b6a3.ulid.UlidCreator
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -33,6 +34,51 @@ class PaymentService(
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ${getAuthString()}")
         .build()
+
+    @Transactional
+    fun requestCashPayment(
+        billIds: List<String>,
+    ): List<Payment> {
+        val billIds = billIds.map { UUID.fromString(it) }.toMutableList()
+        val bills = billRepository.findBillsByIdIsIn(
+            ids = billIds
+        )
+
+        if (bills.isEmpty()) {
+            throw IllegalArgumentException("Bills is empty or not found.")
+        }
+
+        if (bills.any { it.status == BillStatus.PAID }) {
+            throw IllegalArgumentException("Bill is already paid")
+        }
+
+        val oldPayments = bills.flatMap { it.payments }
+
+        // Cancel all pending payments
+        val payments = oldPayments.map {
+            if (it.status == PaymentStatus.PENDING) {
+                it.status = PaymentStatus.FAILED
+                it
+            } else {
+                it
+            }
+        }
+
+        paymentRepository.saveAll(payments)
+
+        val orderId = createTransactionId()
+        val result = bills.map { bill ->
+            Payment(
+                orderId = orderId,
+                paymentType = "Cash",
+                paymentUrl = null,
+                status = PaymentStatus.SUCCESS,
+                bill = bill
+            )
+        }
+
+        return paymentRepository.saveAll(result)
+    }
 
     fun requestPayment(
         billIds: List<String>,
@@ -133,9 +179,14 @@ class PaymentService(
             "${it.createdAt.getMonthName()} ${it.createdAt.getYear()}"
         }.distinct().joinToString(", ")
 
+        var updatedPayments = payments.map {
+            it.paymentType = mapPaymentType(data.paymentType)
+            it
+        }
+
         when (data.transactionStatus) {
             "pending" -> {
-                val updatedPayments = payments.map {
+                updatedPayments = updatedPayments.map {
                     it.status = PaymentStatus.PENDING
                     it
                 }
@@ -146,7 +197,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.PAID }
                 billRepository.saveAll(bills)
 
-                val updatedPayments = payments.map {
+                updatedPayments = updatedPayments.map {
                     it.paymentType = data.paymentType
                     it.status = PaymentStatus.SUCCESS
                     it
@@ -165,7 +216,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
 
-                val updatedPayments = payments.map {
+                updatedPayments = updatedPayments.map {
                     it.status = PaymentStatus.FAILED
                     it
                 }
@@ -183,7 +234,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
 
-                val updatedPayments = payments.map {
+                updatedPayments = updatedPayments.map {
                     it.status = PaymentStatus.REFUND
                     it
                 }
@@ -195,6 +246,21 @@ class PaymentService(
                     user = bills[0].subscriber.user
                 )
             }
+        }
+    }
+
+    private fun mapPaymentType(type: String?): String {
+        return when (type) {
+            null -> "Belum dipilih"
+            "credit_card" -> "Kartu kredit"
+            "gopay" -> "GoPay"
+            "qris" -> "QRIS"
+            "shopeepay" -> "ShopeePay"
+            "bank_transfer" -> "Transfer Bank"
+            "echannel" -> "Mandiri Bill"
+            "akulaku" -> "Akulaku"
+            "cstore" -> "Retail"
+            else -> "Lainnya"
         }
     }
 

@@ -3,7 +3,7 @@ package com.avivba.simbanyu.api.features.payment.model
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 
-data class RequestPaymentRequest(
+data class PaymentRequest(
     @field:NotEmpty
     val billIds: List<String>,
 

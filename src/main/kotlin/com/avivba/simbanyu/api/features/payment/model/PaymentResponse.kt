@@ -1,5 +1,5 @@
 package com.avivba.simbanyu.api.features.payment.model
 
-data class RequestPaymentResponse(
+data class PaymentResponse(
     val paymentUrl: String
 )
