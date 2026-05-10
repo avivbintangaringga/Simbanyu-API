@@ -7,4 +7,5 @@ import java.util.*
 
 interface FcmTokenRepository : JpaRepository<FcmToken, UUID> {
     fun findFcmTokenByUser(user: User): MutableList<FcmToken>
+    fun deleteFcmTokensByUser(user: User)
 }

@@ -6,6 +6,8 @@ import com.avivba.simbanyu.api.features.auth.model.LoginRequest
 import com.avivba.simbanyu.api.features.auth.model.LoginResponseDto
 import com.avivba.simbanyu.api.features.auth.model.RefreshToken
 import com.avivba.simbanyu.api.features.auth.model.TokenResponseDto
+import com.avivba.simbanyu.api.features.fcm.FcmTokenRepository
+import com.avivba.simbanyu.api.features.fcm.FcmTokenService
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.UserDto
 import jakarta.transaction.Transactional
@@ -23,7 +25,8 @@ class AuthService(
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val fcmTokenRepository: FcmTokenRepository
 ) {
     @Transactional
     fun authenticate(body: LoginRequest): LoginResponseDto {
@@ -67,6 +70,12 @@ class AuthService(
         } else {
             throw AccessDeniedException("Invalid refresh token")
         }
+    }
+
+    fun logout(username: String) {
+        val user = userRepository.findByUsername(username)
+        refreshTokenRepository.deleteRefreshTokensByUser(user)
+        fcmTokenRepository.deleteFcmTokensByUser(user)
     }
 
     private fun generateAccessToken(userDetails: UserDetails): String = tokenService.generate(
