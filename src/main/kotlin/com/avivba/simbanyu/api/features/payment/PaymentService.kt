@@ -66,6 +66,12 @@ class PaymentService(
 
         paymentRepository.saveAll(payments)
 
+        val newBills = bills.map { bill ->
+            bill.status = BillStatus.PAID
+            bill
+        }
+        billRepository.saveAll(newBills)
+
         val orderId = createTransactionId()
         val result = bills.map { bill ->
             Payment(
