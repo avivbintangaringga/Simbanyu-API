@@ -32,9 +32,11 @@ class SecurityConfiguration(
                 .requestMatchers(
                     "/api/auth/login",
                     "/api/auth/refresh",
+                    "/api/payment/callback",
                     "/error",
                     "/uploads/**",
                     "/.well-known/**",
+                    "/payment-success"
                 ).permitAll()
                 .anyRequest()
                 .fullyAuthenticated()
