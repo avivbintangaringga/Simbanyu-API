@@ -151,6 +151,12 @@ class PaymentService(
 
         paymentRepository.saveAll(payments)
 
+        notificationService.sendNotificationToUser(
+            title = "Permintaan pembayaran",
+            body = "Permintaan pembayaran berhasil dilakukan, silahkan lakukan pembayaran",
+            user = bills[0].subscriber.user
+        )
+
         return response.redirectUrl
     }
 
