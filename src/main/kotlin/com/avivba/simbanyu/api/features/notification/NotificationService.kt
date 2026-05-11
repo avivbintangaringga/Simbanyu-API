@@ -103,8 +103,12 @@ class NotificationService(
             .build()
 
         println("Sending topic message to: $topic")
-        val response = firebaseMessaging.send(message)
-        println("Successfully sent topic message: $response")
+        try {
+            val response = firebaseMessaging.send(message)
+            println("Successfully sent topic message: $response")
+        } catch (e: Exception) {
+            println("Failed to send topic message: $e")
+        }
     }
 
     private fun sendPushNotification(
@@ -137,7 +141,11 @@ class NotificationService(
             .build()
 
         println("Sending message to: $token")
-        val response = firebaseMessaging.send(message)
-        println("Successfully sent message: $response")
+        try {
+            val response = firebaseMessaging.send(message)
+            println("Successfully sent message: $response")
+        } catch (e: Exception) {
+            println("Failed to send message: $e")
+        }
     }
 }
