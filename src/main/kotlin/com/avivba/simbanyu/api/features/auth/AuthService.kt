@@ -76,7 +76,8 @@ class AuthService(
     fun logout(username: String) {
         val user = userRepository.findByUsername(username)
         refreshTokenRepository.deleteRefreshTokensByUser(user)
-        fcmTokenRepository.deleteFcmTokensByUser(user)
+        user.fcmToken = null
+        userRepository.save(user)
     }
 
     private fun generateAccessToken(userDetails: UserDetails): String = tokenService.generate(
