@@ -32,7 +32,7 @@ class SecurityConfiguration(
                 .requestMatchers(
                     "/api/auth/login",
                     "/api/auth/refresh",
-                    "/api/payment/callback",
+                    "/api/payments/callback",
                     "/error",
                     "/uploads/**",
                     "/.well-known/**",
