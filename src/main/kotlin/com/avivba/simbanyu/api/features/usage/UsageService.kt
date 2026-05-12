@@ -128,12 +128,12 @@ class UsageService(
         result.bill = bill
         val finalResult = usageRepository.save(result)
 
-        notificationService.sendNotificationToUser(
-            title = "Pencatatan Meter (${subscriber.meterId})",
-            body = "Pencatatan meter berhasil dilakukan.",
-            user = currentUser
-        )
-
+//        notificationService.sendNotificationToUser(
+//            title = "Pencatatan Meter (${subscriber.meterId})",
+//            body = "Pencatatan meter berhasil dilakukan.",
+//            user = currentUser
+//        )
+//
         activityService.recordActivity(
             title = "Pencatatan Meter (${subscriber.meterId})",
             body = "Pencatatan meter berhasil dilakukan.",
@@ -174,12 +174,12 @@ class UsageService(
 
         val updatedUsage = usageRepository.save(usage)
 
-        notificationService.sendNotificationToUser(
-            title = "Pembaruan Pencatatan Meter (${usage.subscriber.meterId})",
-            body = "Pembaruan pencatatan meter berhasil dilakukan.",
-            user = currentUser
-        )
-
+//        notificationService.sendNotificationToUser(
+//            title = "Pembaruan Pencatatan Meter (${usage.subscriber.meterId})",
+//            body = "Pembaruan pencatatan meter berhasil dilakukan.",
+//            user = currentUser
+//        )
+//
         activityService.recordActivity(
             title = "Pembaruan pencatatan Meter (${usage.subscriber.meterId})",
             body = "Pembaruan pencatatan meter berhasil dilakukan.",

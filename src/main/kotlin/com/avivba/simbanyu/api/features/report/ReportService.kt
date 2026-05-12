@@ -125,7 +125,7 @@ class ReportService(
 
         activityService.recordActivity(
             user = user,
-            title = "Proses Laporan #${report.id}",
+            title = "Proses Laporan dari ${report.subscriber.user.name}",
             body = "Laporan telah diproses. Status: ${data.status}.",
         )
 
