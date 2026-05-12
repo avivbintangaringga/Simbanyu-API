@@ -76,7 +76,7 @@ class PaymentService(
         val result = bills.map { bill ->
             Payment(
                 orderId = orderId,
-                paymentType = "Cash",
+                paymentType = "cash",
                 paymentUrl = null,
                 status = PaymentStatus.SUCCESS,
                 bill = bill
@@ -203,14 +203,9 @@ class PaymentService(
             "${it.createdAt.getMonthName()} ${it.createdAt.getYear()}"
         }.distinct().joinToString(", ")
 
-        var updatedPayments = payments.map {
-            it.paymentType = mapPaymentType(data.paymentType)
-            it
-        }
-
         when (data.transactionStatus) {
             "pending" -> {
-                updatedPayments = updatedPayments.map {
+                val updatedPayments = payments.map {
                     it.status = PaymentStatus.PENDING
                     it
                 }
@@ -221,7 +216,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.PAID }
                 billRepository.saveAll(bills)
 
-                updatedPayments = updatedPayments.map {
+                val updatedPayments = payments.map {
                     it.status = PaymentStatus.SUCCESS
                     it
                 }
@@ -239,7 +234,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
 
-                updatedPayments = updatedPayments.map {
+                val updatedPayments = payments.map {
                     it.status = PaymentStatus.FAILED
                     it
                 }
@@ -257,7 +252,7 @@ class PaymentService(
                 bills.forEach { bill -> bill.status = BillStatus.UNPAID }
                 billRepository.saveAll(bills)
 
-                updatedPayments = updatedPayments.map {
+                val updatedPayments = payments.map {
                     it.status = PaymentStatus.REFUND
                     it
                 }
@@ -269,21 +264,6 @@ class PaymentService(
                     user = bills[0].subscriber.user
                 )
             }
-        }
-    }
-
-    private fun mapPaymentType(type: String?): String {
-        return when (type) {
-            null -> "Belum dipilih"
-            "credit_card" -> "Kartu kredit"
-            "gopay" -> "GoPay"
-            "qris" -> "QRIS"
-            "shopeepay" -> "ShopeePay"
-            "bank_transfer" -> "Transfer Bank"
-            "echannel" -> "Mandiri Bill"
-            "akulaku" -> "Akulaku"
-            "cstore" -> "Retail"
-            else -> "Lainnya"
         }
     }
 

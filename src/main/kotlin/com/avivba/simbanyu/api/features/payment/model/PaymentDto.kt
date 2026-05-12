@@ -13,11 +13,29 @@ data class PaymentDto(
         fun fromEntity(payment: Payment) = PaymentDto(
             id = payment.id.toString(),
             orderId = payment.orderId,
-            paymentType = payment.paymentType,
+            paymentType = mapPaymentType(payment.paymentType),
             paymentUrl = payment.paymentUrl,
             status = payment.status.name,
             createdAt = payment.createdAt.toString(),
             updatedAt = payment.updatedAt.toString(),
         )
+
+
+        private fun mapPaymentType(type: String?): String {
+            return when (type) {
+                null -> "Belum dipilih"
+                "cash" -> "Tunai"
+                "credit_card" -> "Kartu kredit"
+                "gopay" -> "GoPay"
+                "qris" -> "QRIS"
+                "shopeepay" -> "ShopeePay"
+                "bank_transfer" -> "Transfer Bank"
+                "echannel" -> "Mandiri Bill"
+                "akulaku" -> "Akulaku"
+                "cstore" -> "Retail"
+                else -> "Lainnya"
+            }
+        }
+
     }
 }
