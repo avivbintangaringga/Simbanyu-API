@@ -128,10 +128,17 @@ class Seed(
             val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull()
                 ?: throw Exception("Plan not found")
 
+            val phone = if (!it["phone"].startsWith("0"))
+                "0${it["phone"]}" else it["phone"]
+
+            val password = it["password"]!!
+
+            println("Adding subscriber: ${it["name"]} with phone: $phone and password: $password")
+
             AddSubscriberRequest(
                 name = it["name"],
-                phoneNumber = "0" + it["phone"],
-                password = encoder.encode(it["password"])!!,
+                phoneNumber = phone,
+                password = password, // Don't encode here because SubscriberService already encodes it
                 meterId = it["meterId"],
                 initialMeter = it["initialMeter"].toInt(),
                 planId = plan.id.toString(),
@@ -172,7 +179,7 @@ class Seed(
                 previousUsage.updatedAt = previousDate
 
                 val today = LocalDateTime.now()
-                val numMonths = ChronoUnit.MONTHS.between(previousLocalDate, today)
+                val numMonths = ChronoUnit.MONTHS.between(previousLocalDate, today) - 1
 
                 for (i in 1..numMonths) {
                     // Usage
@@ -181,7 +188,7 @@ class Seed(
                     val currentUsageAmount = Random.nextInt(10, 20)
                     var usage = Usage(
                         meterStart = previousUsage.meterEnd,
-                        meterEnd = currentUsageAmount,
+                        meterEnd = previousUsage.meterEnd + currentUsageAmount,
                         evidenceImage = createDemoUpload(),
                         operatorNotes = "",
                         subscriber = subscriber,
