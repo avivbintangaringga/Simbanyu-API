@@ -136,8 +136,8 @@ class Seed(
                 initialMeter = it["initialMeter"].toInt(),
                 planId = plan.id.toString(),
                 address = it["address"],
-                longitude = coordinate.first,
-                latitude = coordinate.second
+                latitude = coordinate.first,
+                longitude = coordinate.second
             )
         }
 
@@ -153,10 +153,10 @@ class Seed(
 
         if (demoProperties.enabled) {
             val subscriberIds = subscriberRepository.findAll().map { it.id!! }
-            
+
             for (subscriberId in subscriberIds) {
                 val subscriber = subscriberRepository.findById(subscriberId).get()
-                
+
                 val usageSpecs = UsageSpecs.filterBy(subscriber.id.toString(), includeInitial = true)
                 var previousUsage = usageRepository.findAll(usageSpecs).first()
 
@@ -211,7 +211,7 @@ class Seed(
                     bill.updatedAt = date
 
                     val usageAmount = currentUsageAmount - previousUsage.meterEnd
-                    
+
                     // BillItem (Batched)
                     val billItemsToSave = mapOf(
                         "Biaya tetap" to 5000.0,
@@ -255,7 +255,7 @@ class Seed(
                         val randomDate = originDate.plusDays(Random.nextLong(0, daysBetween))
                             .atZone(ZoneId.systemDefault())
                             .toInstant()
-                        
+
                         Notification(
                             title = "Notification $j",
                             body = "Demo notification content $j",
@@ -264,7 +264,7 @@ class Seed(
                             updatedAt = randomDate
                         ) to randomDate
                     }
-                    
+
                     notificationsToSave.forEach { (notification, date) ->
                         val saved = notificationRepository.save(notification)
                         notificationRepository.updateTimestamps(saved.id!!, date)
