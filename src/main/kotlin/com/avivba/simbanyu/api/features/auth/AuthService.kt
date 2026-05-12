@@ -26,6 +26,7 @@ class AuthService(
     private val jwtProperties: JwtProperties,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val userRepository: UserRepository,
+    private val fcmTokenService: FcmTokenService,
 ) {
     @Transactional
     fun authenticate(body: LoginRequest): LoginResponseDto {
@@ -73,8 +74,7 @@ class AuthService(
     fun logout(username: String) {
         val user = userRepository.findByUsername(username)
         refreshTokenRepository.deleteRefreshTokensByUser(user)
-        user.fcmToken = null
-        userRepository.save(user)
+        fcmTokenService.deleteToken(username)
     }
 
     private fun generateAccessToken(userDetails: UserDetails): String = tokenService.generate(

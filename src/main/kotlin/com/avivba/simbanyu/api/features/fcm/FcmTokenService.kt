@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.google.firebase.messaging.FirebaseMessaging
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,29 +14,41 @@ class FcmTokenService(
     private val userRepository: UserRepository,
     private val firebaseMessaging: FirebaseMessaging
 ) {
+    @Transactional
     fun submitToken(
         token: String,
         username: String
     ): FcmToken {
         val user = userRepository.findByUsername(username)
-        val currentToken = fcmTokenRepository.findFcmTokenByUser(user).firstOrNull()
+        val currentToken = user.fcmToken
 
         if (currentToken != null) {
-            val previousToken = currentToken.token
-            unsubscribeTokenByRole(user.role, previousToken)
-            currentToken.token = token
+            unsubscribeTokenByRole(user.role, currentToken.token)
             subscribeTokenByRole(user.role, token)
+            currentToken.token = token
+
             return fcmTokenRepository.save(currentToken)
+        } else {
+            subscribeTokenByRole(user.role, token)
+            val tokenEntity = FcmToken(
+                token = token,
+                user = user
+            )
+
+            return fcmTokenRepository.save(tokenEntity)
         }
+    }
 
-        subscribeTokenByRole(user.role, token)
-
-        val token = FcmToken(
-            token = token,
-            user = user
-        )
-
-        return fcmTokenRepository.save(token)
+    fun deleteToken(
+        username: String
+    ) {
+        val user = userRepository.findByUsername(username)
+        val currentToken = user.fcmToken
+        if (currentToken != null) {
+            unsubscribeTokenByRole(user.role, currentToken.token)
+            user.fcmToken = null
+            userRepository.save(user)
+        }
     }
 
     fun getUserToken(
