@@ -192,7 +192,10 @@ class PaymentService(
             throw IllegalArgumentException("Invalid notification signature")
         }
 
-        val payments = paymentRepository.findPaymentByOrderId(data.orderId)
+        val payments = paymentRepository.findPaymentByOrderId(data.orderId).map {
+            it.paymentType = data.paymentType
+            it
+        }
 
         if (payments.isEmpty()) {
             throw EntityNotFoundException("Payment not found")
