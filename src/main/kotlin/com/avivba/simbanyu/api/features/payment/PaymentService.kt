@@ -184,7 +184,7 @@ class PaymentService(
         val isSignatureValid = checkSignature(
             data.signatureKey,
             data.orderId,
-            data.transactionStatus,
+            data.statusCode,
             data.grossAmount
         )
 
