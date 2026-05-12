@@ -26,7 +26,6 @@ class AuthService(
     private val jwtProperties: JwtProperties,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val userRepository: UserRepository,
-    private val fcmTokenRepository: FcmTokenRepository
 ) {
     @Transactional
     fun authenticate(body: LoginRequest): LoginResponseDto {
@@ -40,10 +39,8 @@ class AuthService(
         val accessToken = generateAccessToken(userDetails)
         val refreshToken = generateRefreshToken(userDetails)
 
-        // Delete all refresh tokens for the user
         refreshTokenRepository.deleteRefreshTokensByUser(user)
 
-        // Save the new refresh token
         refreshTokenRepository.save(
             RefreshToken(
                 token = refreshToken,
