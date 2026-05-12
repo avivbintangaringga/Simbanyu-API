@@ -2,6 +2,7 @@ package com.avivba.simbanyu.api
 
 import com.avivba.simbanyu.api.config.properties.DemoProperties
 import com.avivba.simbanyu.api.config.properties.FileStorageProperties
+import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.features.bill.BillItemRepository
 import com.avivba.simbanyu.api.features.bill.BillRepository
 import com.avivba.simbanyu.api.features.bill.model.Bill
@@ -41,6 +42,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Date
@@ -49,6 +51,7 @@ import kotlin.random.Random
 @Component
 class Seed(
     private val demoProperties: DemoProperties,
+    private val jwtProperties: JwtProperties,
     private val storageProps: FileStorageProperties,
     private val userRepository: UserRepository,
     private val planRepository: PlanRepository,
@@ -64,31 +67,33 @@ class Seed(
     private val notificationRepository: NotificationRepository,
     private val encoder: PasswordEncoder
 ) : CommandLineRunner {
+
     @Transactional
     override fun run(vararg args: String) {
         if (userRepository.count() > 0) return
-
         val usersData = readCsv("seeds/users.csv") {
             User(
                 name = it["name"]!!,
                 username = it["username"]!!,
                 password = encoder.encode(it["password"]!!)!!,
-                phoneNumber = it["phoneNumber"]!!,
+                phoneNumber = "0" + it["phone"]!!,
                 role = UserRole.valueOf(it["role"]!!),
             )
-        }
+        }.toMutableList()
 
-        userRepository.saveAll(usersData)
-
-        val seederUser = userRepository.save(
+        usersData += userRepository.save(
             User(
                 name = "Seeder",
-                username = "seeder",
-                password = encoder.encode("seeder")!!,
+                username = "seeder0",
+                password = encoder.encode(jwtProperties.key)!!,
                 phoneNumber = "000000000",
                 role = UserRole.ADMIN
             )
         )
+
+        userRepository.saveAll(usersData)
+
+        val seederUser = userRepository.findByUsername("seeder0")
 
         val plansData = readCsv("seeds/plans.csv") {
             Plan(
@@ -107,7 +112,7 @@ class Seed(
                 name = it["name"],
                 tierOrder = it["order"].toInt(),
                 plan = plan,
-                maxVolume = it["maxVolume"].toInt(),
+                maxVolume = if (it["maxVolume"].isNullOrEmpty()) null else it["maxVolume"].toInt(),
                 pricePerMeter = it["pricePerMeter"].toDouble(),
             )
         }
@@ -115,22 +120,18 @@ class Seed(
         priceRepository.saveAll(pricesData)
 
         val subscribersData = readCsv("seeds/subscribers.csv") {
-            val mapUrl = it["map"]!!
-            val coordinate = getCoordinatesFromShortUrl(mapUrl)
-            if (coordinate == null) {
-                println("Cannot get coordinate for ${mapUrl}, skipping...")
-                return@readCsv null
-            }
+            val coordinateValue = it["coordinate"]
+            val coordinate = getCoordinate(coordinateValue)
 
             val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull()
                 ?: throw Exception("Plan not found")
 
             AddSubscriberRequest(
                 name = it["name"],
-                phoneNumber = it["phone"],
+                phoneNumber = "0" + it["phone"],
                 password = encoder.encode(it["password"])!!,
                 meterId = it["meterId"],
-                initialMeter = it["inititalMeter"].toInt(),
+                initialMeter = it["initialMeter"].toInt(),
                 planId = plan.id.toString(),
                 address = it["address"],
                 longitude = coordinate.first,
@@ -148,17 +149,7 @@ class Seed(
 
         // DEMO SEED
 
-        if (!demoProperties.enabled) {
-            val input = File("seeds/demo.jpg")
-            val demoFile = uploadRepository.save(
-                Upload(
-                    contentType = "image/jpg",
-                )
-            )
-            val targetFile = File(storageProps.uploadDir, demoFile.id.toString())
-            targetFile.parentFile.mkdirs()
-            input.copyTo(targetFile)
-
+        if (demoProperties.enabled) {
             subscriberRepository.findAll().forEach { subscriber ->
                 val usageSpecs = UsageSpecs.filterBy(subscriber.id.toString(), includeInitial = true)
                 var previousUsage = usageRepository.findAll(usageSpecs).first()
@@ -175,7 +166,7 @@ class Seed(
                 previousUsage.updatedAt = previousDate
                 previousUsage = usageRepository.save(previousUsage)
 
-                val today = LocalDate.now()
+                val today = LocalDateTime.now()
                 val numMonths = ChronoUnit.MONTHS.between(previousLocalDate, today)
 
                 for (i in 1..numMonths) {
@@ -186,7 +177,7 @@ class Seed(
                     val usage = Usage(
                         meterStart = previousUsage.meterEnd,
                         meterEnd = currentUsageAmount,
-                        evidenceImage = demoFile,
+                        evidenceImage = createDemoUpload(),
                         operatorNotes = "",
                         subscriber = subscriber,
                         createdAt = date,
@@ -255,28 +246,27 @@ class Seed(
                 }
             }
         }
-
-        userRepository.delete(seederUser)
     }
 
-    private fun getCoordinatesFromShortUrl(shortUrl: String): Pair<Double, Double>? {
-        return try {
-            val connection = URI.create(shortUrl).toURL().openConnection() as HttpURLConnection
-            connection.instanceFollowRedirects = false
-            connection.connect()
+    private fun createDemoUpload(): Upload {
+        val input = File("seeds/demo.png")
+        val demoFile = uploadRepository.save(
+            Upload(
+                contentType = "image/png",
+            )
+        )
+        val targetFile = File(storageProps.uploadDir, demoFile.id.toString())
+        targetFile.parentFile.mkdirs()
+        input.copyTo(targetFile)
+        return demoFile
+    }
 
-            val expandedUrl = connection.getHeaderField("Location") ?: return null
-            connection.disconnect()
+    private fun getCoordinate(coordinateString: String): Pair<Double, Double> {
+        val parts = coordinateString.split(",")
+        val lat = parts[0].trim().toDouble()
+        val lng = parts[1].trim().toDouble()
 
-            val match = Regex("@(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)").find(expandedUrl)
-
-            match?.let {
-                val (lat, lng) = it.destructured
-                lat.toDouble() to lng.toDouble()
-            }
-        } catch (e: Exception) {
-            null
-        }
+        return lat to lng
     }
 
     private fun <T : Any> readCsv(path: String, map: (record: CSVRecord) -> T?): List<T> {
