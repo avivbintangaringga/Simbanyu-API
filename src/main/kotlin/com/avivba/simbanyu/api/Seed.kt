@@ -202,11 +202,12 @@ class Seed(
                     usage.updatedAt = date
                     previousUsage = usage
                     previousLocalDate = dateLocal
+                    val usageAmount = usage.meterEnd - usage.meterStart
 
                     // Bill
                     var bill = Bill(
-                        amount = 1000.0,
-                        status = if (numMonths - i < 4) BillStatus.UNPAID else BillStatus.PAID,
+                        amount = 5000 + usageAmount * 2000 + 1000.0,
+                        status = if (numMonths - i < 3) BillStatus.UNPAID else BillStatus.PAID,
                         subscriber = subscriber,
                         usage = usage,
                         createdAt = date,
@@ -217,12 +218,11 @@ class Seed(
                     bill.createdAt = date
                     bill.updatedAt = date
 
-                    val usageAmount = currentUsageAmount - previousUsage.meterEnd
 
                     // BillItem (Batched)
                     val billItemsToSave = mapOf(
                         "Biaya tetap" to 5000.0,
-                        "Biaya penggunaan (${usageAmount}m³)" to usageAmount * 1500.0,
+                        "Biaya penggunaan (${usageAmount}m³)" to usageAmount * 2000.0,
                         "Biaya admin" to 1000.0,
                     ).map { (name, amount) ->
                         BillItem(
