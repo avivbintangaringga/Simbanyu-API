@@ -4,6 +4,9 @@ import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import java.time.Instant
 import java.util.*
 
 interface BillRepository : JpaRepository<Bill, UUID>, JpaSpecificationExecutor<Bill> {
@@ -11,4 +14,7 @@ interface BillRepository : JpaRepository<Bill, UUID>, JpaSpecificationExecutor<B
     fun findBillsByIdIsIn(ids: MutableCollection<UUID>): MutableList<Bill>
 //    fun findBillsBySubscriber_IdAndStatus(subscriberId: UUID, status: BillStatus): MutableList<Bill>
     
+    @Modifying
+    @Query("UPDATE Bill b SET b.createdAt = :date, b.updatedAt = :date WHERE b.id = :id")
+    fun updateTimestamps(id: UUID, date: Instant)
 }

@@ -30,6 +30,7 @@ import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.User
 import com.avivba.simbanyu.api.features.user.model.UserRole
+import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
@@ -65,7 +66,8 @@ class Seed(
     private val paymentRepository: PaymentRepository,
     private val paymentService: PaymentService,
     private val notificationRepository: NotificationRepository,
-    private val encoder: PasswordEncoder
+    private val encoder: PasswordEncoder,
+    private val entityManager: EntityManager
 ) : CommandLineRunner {
 
     @Transactional
@@ -150,21 +152,24 @@ class Seed(
         // DEMO SEED
 
         if (demoProperties.enabled) {
-            subscriberRepository.findAll().forEach { subscriber ->
+            val subscriberIds = subscriberRepository.findAll().map { it.id!! }
+            
+            for (subscriberId in subscriberIds) {
+                val subscriber = subscriberRepository.findById(subscriberId).get()
+                
                 val usageSpecs = UsageSpecs.filterBy(subscriber.id.toString(), includeInitial = true)
                 var previousUsage = usageRepository.findAll(usageSpecs).first()
 
-                var previousLocalDate = LocalDate
-                    .of(2023, 1, 1)
-                    .atTime(10, 5)
+                val originDate = LocalDate.of(2023, 1, 1).atTime(10, 5)
+                var previousLocalDate = originDate
 
                 val previousDate = previousLocalDate
                     .atZone(ZoneId.systemDefault())
                     .toInstant()
 
+                usageRepository.updateTimestamps(previousUsage.id!!, previousDate)
                 previousUsage.createdAt = previousDate
                 previousUsage.updatedAt = previousDate
-                previousUsage = usageRepository.save(previousUsage)
 
                 val today = LocalDateTime.now()
                 val numMonths = ChronoUnit.MONTHS.between(previousLocalDate, today)
@@ -174,7 +179,7 @@ class Seed(
                     val dateLocal = previousLocalDate.plusMonths(1)
                     val date = dateLocal.atZone(ZoneId.systemDefault()).toInstant()
                     val currentUsageAmount = Random.nextInt(10, 20)
-                    val usage = Usage(
+                    var usage = Usage(
                         meterStart = previousUsage.meterEnd,
                         meterEnd = currentUsageAmount,
                         evidenceImage = createDemoUpload(),
@@ -184,66 +189,91 @@ class Seed(
                         updatedAt = date
                     )
 
-                    previousUsage = usageRepository.save(usage)
+                    usage = usageRepository.save(usage)
+                    usageRepository.updateTimestamps(usage.id!!, date)
+                    usage.createdAt = date
+                    usage.updatedAt = date
+                    previousUsage = usage
                     previousLocalDate = dateLocal
 
                     // Bill
-                    val bill = billRepository.save(
-                        Bill(
-                            amount = 1000.0,
-                            status = if (numMonths - i < 4) BillStatus.UNPAID else BillStatus.PAID,
-                            subscriber = subscriber,
-                            usage = usage,
-                            createdAt = date,
-                            updatedAt = date,
-                        )
+                    var bill = Bill(
+                        amount = 1000.0,
+                        status = if (numMonths - i < 4) BillStatus.UNPAID else BillStatus.PAID,
+                        subscriber = subscriber,
+                        usage = usage,
+                        createdAt = date,
+                        updatedAt = date,
                     )
+                    bill = billRepository.save(bill)
+                    billRepository.updateTimestamps(bill.id!!, date)
+                    bill.createdAt = date
+                    bill.updatedAt = date
 
                     val usageAmount = currentUsageAmount - previousUsage.meterEnd
-                    mapOf(
+                    
+                    // BillItem (Batched)
+                    val billItemsToSave = mapOf(
                         "Biaya tetap" to 5000.0,
                         "Biaya penggunaan (${usageAmount}m³)" to usageAmount * 1500.0,
                         "Biaya admin" to 1000.0,
-                    ).forEach { (name, amount) ->
-                        billItemRepository.save(
-                            BillItem(
-                                name = name,
-                                amount = amount,
-                                bill = bill,
-                                createdAt = date,
-                                updatedAt = date
-                            )
-                        )
-                    }
-
-                    // Payment
-                    if (bill.status == BillStatus.PAID) {
-                        val paymentTypes = listOf("cash", "gopay", "shopeepay", "cstore", "bank_transfer", "qris")
-                        paymentRepository.save(
-                            Payment(
-                                orderId = paymentService.createTransactionId(),
-                                paymentType = paymentTypes.random(),
-                                paymentUrl = "https://www.google.com/",
-                                status = PaymentStatus.SUCCESS,
-                                bill = bill,
-                                createdAt = date,
-                                updatedAt = date,
-                            )
-                        )
-                    }
-
-                    // Notification
-                    val notifications = (1..15).map { i ->
-                        Notification(
-                            title = "Notification $i",
-                            body = "Demo notification content $i",
-                            user = subscriber.user,
+                    ).map { (name, amount) ->
+                        BillItem(
+                            name = name,
+                            amount = amount,
+                            bill = bill,
                             createdAt = date,
                             updatedAt = date
                         )
                     }
-                    notificationRepository.saveAll(notifications)
+                    val savedBillItems = billItemRepository.saveAll(billItemsToSave)
+                    billItemRepository.updateTimestampsInBatch(savedBillItems.map { it.id!! }, date)
+
+                    // Payment
+                    if (bill.status == BillStatus.PAID) {
+                        val paymentTypes = listOf("cash", "gopay", "shopeepay", "cstore", "bank_transfer", "qris")
+                        var payment = Payment(
+                            orderId = paymentService.createTransactionId(),
+                            paymentType = paymentTypes.random(),
+                            paymentUrl = "https://www.google.com/",
+                            status = PaymentStatus.SUCCESS,
+                            bill = bill,
+                            createdAt = date,
+                            updatedAt = date,
+                        )
+                        payment = paymentRepository.save(payment)
+                        paymentRepository.updateTimestamps(payment.id!!, date)
+                        payment.createdAt = date
+                        payment.updatedAt = date
+                    }
                 }
+
+                // 15 Notifications per subscriber with varying past dates
+                val daysBetween = ChronoUnit.DAYS.between(originDate, today)
+                if (daysBetween > 0) {
+                    val notificationsToSave = (1..15).map { j ->
+                        val randomDate = originDate.plusDays(Random.nextLong(0, daysBetween))
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                        
+                        Notification(
+                            title = "Notification $j",
+                            body = "Demo notification content $j",
+                            user = subscriber.user,
+                            createdAt = randomDate,
+                            updatedAt = randomDate
+                        ) to randomDate
+                    }
+                    
+                    notificationsToSave.forEach { (notification, date) ->
+                        val saved = notificationRepository.save(notification)
+                        notificationRepository.updateTimestamps(saved.id!!, date)
+                    }
+                }
+
+                // Periodically flush and clear to prevent L1 Cache O(N^2) memory explosions
+                entityManager.flush()
+                entityManager.clear()
             }
         }
     }
