@@ -222,7 +222,6 @@ class PaymentService(
                 billRepository.saveAll(bills)
 
                 updatedPayments = updatedPayments.map {
-                    it.paymentType = data.paymentType
                     it.status = PaymentStatus.SUCCESS
                     it
                 }
