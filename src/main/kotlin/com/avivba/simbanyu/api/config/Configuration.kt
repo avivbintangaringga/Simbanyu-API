@@ -1,6 +1,7 @@
 package com.avivba.simbanyu.api.config
 
 import com.avivba.simbanyu.api.components.CustomUserDetailsService
+import com.avivba.simbanyu.api.config.properties.DemoProperties
 import com.avivba.simbanyu.api.config.properties.FileStorageProperties
 import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.config.properties.MidtransProperties
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
     PriceProperties::class,
     MidtransProperties::class,
     FileStorageProperties::class,
+    DemoProperties::class
 )
 class Configuration {
     @Bean

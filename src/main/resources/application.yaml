@@ -35,3 +35,6 @@ midtrans:
 
 firebase:
   service-account: ${FIREBASE_SERVICE_ACCOUNT}
+
+demo:
+  enabled: ${DEMO_ENABLED}

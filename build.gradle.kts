@@ -38,6 +38,8 @@ dependencies {
 
     implementation("com.google.firebase:firebase-admin:9.8.0")
 
+    implementation("org.apache.commons:commons-csv:1.14.1")
+
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")

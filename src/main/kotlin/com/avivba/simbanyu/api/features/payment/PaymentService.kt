@@ -280,7 +280,7 @@ class PaymentService(
         return calculatedSignature == signatureKey
     }
 
-    private fun createTransactionId(): String {
+    fun createTransactionId(): String {
         val builder = StringBuilder()
         builder.append("SMB-")
         builder.append(UlidCreator.getUlid())
