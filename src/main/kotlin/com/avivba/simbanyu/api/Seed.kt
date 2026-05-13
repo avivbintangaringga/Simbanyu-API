@@ -255,11 +255,14 @@ class Seed(
                     }
                 }
 
-                // 15 Notifications per subscriber with varying past dates
-                val daysBetween = ChronoUnit.DAYS.between(originDate, today)
-                if (daysBetween > 0) {
+                // 15 Notifications per subscriber with varying past dates (within last 2 days)
+                val maxDate = LocalDateTime.now()
+                val minDate = maxDate.minusDays(2)
+                val secondsBetween = ChronoUnit.SECONDS.between(minDate, maxDate)
+
+                if (secondsBetween > 0) {
                     val notificationsToSave = (1..15).map { j ->
-                        val randomDate = originDate.plusDays(Random.nextLong(0, daysBetween))
+                        val randomDate = minDate.plusSeconds(Random.nextLong(0, secondsBetween))
                             .atZone(ZoneId.systemDefault())
                             .toInstant()
 
