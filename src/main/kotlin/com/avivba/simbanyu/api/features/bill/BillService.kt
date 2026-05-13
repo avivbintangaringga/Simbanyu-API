@@ -12,6 +12,7 @@ import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.avivba.simbanyu.api.utils.getMonthName
+import com.avivba.simbanyu.api.utils.toDottedCurrency
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Limit
 import org.springframework.data.domain.PageRequest
@@ -110,7 +111,7 @@ class BillService(
 
         notificationService.sendNotificationToUser(
             title = "Tagihan Bulan ${usage.createdAt.getMonthName()}",
-            body = "Tagihan anda sebesar Rp${billResult.amount} telah dikeluarkan.",
+            body = "Tagihan anda sebesar ${billResult.amount.toDottedCurrency()} telah dikeluarkan.",
             user = subscriber.user
         )
 
@@ -198,7 +199,7 @@ class BillService(
         )
     )
 
-    private fun calculateTieredCost(
+    fun calculateTieredCost(
         plan: Plan,
         usageAmount: Int,
     ): Double {
