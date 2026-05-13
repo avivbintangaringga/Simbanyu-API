@@ -6,6 +6,7 @@ import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
 import com.avivba.simbanyu.api.features.payment.model.*
 import com.avivba.simbanyu.api.features.notification.NotificationService
+import com.avivba.simbanyu.api.features.notification.model.BroadcastTopic
 import com.avivba.simbanyu.api.features.payment.model.midtrans.CustomerDetails
 import com.avivba.simbanyu.api.features.payment.model.midtrans.TransactionDetails
 import com.avivba.simbanyu.api.utils.getMonthName
@@ -93,6 +94,18 @@ class PaymentService(
             title = "Tagihan Selesai Dibayar",
             body = "Tagihan bulan ${months} telah berhasil dibayar",
             user = bills[0].subscriber.user
+        )
+
+        notificationService.sendBroadcastNotification(
+            title = "Tagihan Dibayar",
+            body = "Tagihan pengguna ${bills[0].subscriber.user.name} (${bills[0].subscriber.meterId}) bulan ${months} telah berhasil dibayar",
+            topic = BroadcastTopic.OPERATOR
+        )
+
+        notificationService.sendBroadcastNotification(
+            title = "Tagihan Dibayar",
+            body = "Tagihan pengguna ${bills[0].subscriber.user.name} (${bills[0].subscriber.meterId}) bulan ${months} telah berhasil dibayar",
+            topic = BroadcastTopic.ADMIN
         )
 
         return paymentResult
@@ -230,6 +243,18 @@ class PaymentService(
                     title = "Tagihan Selesai Dibayar",
                     body = "Tagihan bulan ${months} telah berhasil dibayar",
                     user = bills[0].subscriber.user
+                )
+
+                notificationService.sendBroadcastNotification(
+                    title = "Tagihan Dibayar",
+                    body = "Tagihan pengguna ${bills[0].subscriber.user.name} (${bills[0].subscriber.meterId}) bulan ${months} telah berhasil dibayar",
+                    topic = BroadcastTopic.OPERATOR
+                )
+
+                notificationService.sendBroadcastNotification(
+                    title = "Tagihan Dibayar",
+                    body = "Tagihan pengguna ${bills[0].subscriber.user.name} (${bills[0].subscriber.meterId}) bulan ${months} telah berhasil dibayar",
+                    topic = BroadcastTopic.ADMIN
                 )
             }
 

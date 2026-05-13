@@ -127,9 +127,7 @@ class Seed(
             val coordinate = getCoordinate(coordinateValue)
 
             val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull() ?: throw Exception("Plan not found")
-
             val phone = if (!it["phone"].startsWith("0")) "0${it["phone"]}" else it["phone"]
-
             val password = it["password"]!!
 
             println("Adding subscriber: ${it["name"]} with phone: $phone and password: $password")
@@ -216,16 +214,8 @@ class Seed(
 
                     val plan = subscriber.plan
 
-                    // BillItem (Batched)
-                    val billItemsToSave = mapOf(
-                        "Biaya tetap" to plan.basePrice,
-                        "Biaya penggunaan (${usageAmount}m³)" to billService.calculateTieredCost(plan, usageAmount),
-                        "Biaya admin" to 1000.0,
-                    ).map { (name, amount) ->
-                        BillItem(
-                            name = name, amount = amount, bill = bill, createdAt = date, updatedAt = date
-                        )
-                    }
+                    val billItemsToSave = billService.createBillItems(plan, usageAmount, bill)
+
                     val savedBillItems = billItemRepository.saveAll(billItemsToSave)
                     billItemRepository.updateTimestampsInBatch(savedBillItems.map { it.id!! }, date)
 
@@ -248,7 +238,6 @@ class Seed(
                     }
                 }
 
-                // 15 Notifications per subscriber with varying past dates (within last 2 days)
                 val maxDate = LocalDateTime.now()
                 val minDate = maxDate.minusDays(2)
                 val secondsBetween = ChronoUnit.SECONDS.between(minDate, maxDate)
@@ -274,7 +263,6 @@ class Seed(
                     }
                 }
 
-                // Periodically flush and clear to prevent L1 Cache O(N^2) memory explosions
                 entityManager.flush()
                 entityManager.clear()
             }

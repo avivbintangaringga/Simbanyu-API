@@ -12,6 +12,7 @@ import com.avivba.simbanyu.api.features.usage.model.Usage
 import com.avivba.simbanyu.api.features.user.UserRepository
 import com.avivba.simbanyu.api.features.user.model.UserRole
 import com.avivba.simbanyu.api.utils.getMonthName
+import com.avivba.simbanyu.api.utils.getYear
 import com.avivba.simbanyu.api.utils.toDottedCurrency
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Limit
@@ -91,9 +92,8 @@ class BillService(
     ): Bill {
         val plan = subscriber.plan
         val usageAmount = usage.meterEnd - usage.meterStart
-        val tieredCost = calculateTieredCost(plan, usageAmount)
 
-        val billItems = createBillItems(plan, usageAmount, tieredCost)
+        val billItems = createBillItems(plan, usageAmount)
         val totalCost = billItems.sumOf { it.amount }
 
         val bill = Bill(
@@ -110,8 +110,8 @@ class BillService(
         })
 
         notificationService.sendNotificationToUser(
-            title = "Tagihan Bulan ${usage.createdAt.getMonthName()}",
-            body = "Tagihan anda sebesar ${billResult.amount.toDottedCurrency()} telah dikeluarkan.",
+            title = "Tagihan Bulan ${usage.createdAt.getMonthName()} ${usage.createdAt.getYear()}",
+            body = "Anda memiliki tagihan sebesar ${billResult.amount.toDottedCurrency()}",
             user = subscriber.user
         )
 
@@ -125,10 +125,9 @@ class BillService(
     ): Bill {
         val plan = bill.subscriber.plan
         val usageAmount = usage.meterEnd - usage.meterStart
-        val tieredCost = calculateTieredCost(plan, usageAmount)
 
         bill.billItems.clear()
-        val items = createBillItems(plan, usageAmount, tieredCost, bill)
+        val items = createBillItems(plan, usageAmount, bill)
         bill.billItems.addAll(items)
 
         val totalCost = bill.billItems.sumOf { it.amount }
@@ -139,47 +138,9 @@ class BillService(
         return billRepository.save(bill)
     }
 
-//    fun updateBillStatus(
-//        bill: Bill,
-//        status: BillStatus,
-//    ): Bill {
-//        bill.status = status
-//        val updatedBill = billRepository.save(bill)
-//        val user = bill.subscriber.user
-//
-//        when (status) {
-//            BillStatus.PAID -> {
-//                notificationService.sendNotificationToUser(
-//                    title = "Tagihan Selesai Dibayar",
-//                    body = "Tagihan bulan ${updatedBill.createdAt.getMonthName()} telah berhasil dibayar",
-//                    user = user
-//                )
-//            }
-//
-//            BillStatus.UNPAID -> {
-//                notificationService.sendNotificationToUser(
-//                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
-//                    body = "Anda belum melakukan pembayaran, segera lakukan pembayaran",
-//                    user = user
-//                )
-//            }
-//
-//            BillStatus.PENDING -> {
-//                notificationService.sendNotificationToUser(
-//                    title = "Pembayaran Bulan ${updatedBill.createdAt.getMonthName()}",
-//                    body = "Permintaan pembayaran telah dibuat, segera lakukan pembayaran",
-//                    user = user
-//                )
-//            }
-//        }
-//
-//        return updatedBill
-//    }
-
-    private fun createBillItems(
+    fun createBillItems(
         plan: Plan,
         usageAmount: Int,
-        tieredCost: Double,
         bill: Bill? = null
     ) = listOf(
         BillItem(
@@ -189,7 +150,7 @@ class BillService(
         ),
         BillItem(
             name = "Biaya penggunaan (${usageAmount} m³)",
-            amount = tieredCost,
+            amount = calculateTieredCost(plan, usageAmount),
             bill = bill
         ),
         BillItem(
@@ -199,7 +160,7 @@ class BillService(
         )
     )
 
-    fun calculateTieredCost(
+    private fun calculateTieredCost(
         plan: Plan,
         usageAmount: Int,
     ): Double {
