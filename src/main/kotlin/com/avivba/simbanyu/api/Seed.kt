@@ -5,6 +5,7 @@ import com.avivba.simbanyu.api.config.properties.FileStorageProperties
 import com.avivba.simbanyu.api.config.properties.JwtProperties
 import com.avivba.simbanyu.api.features.bill.BillItemRepository
 import com.avivba.simbanyu.api.features.bill.BillRepository
+import com.avivba.simbanyu.api.features.bill.BillService
 import com.avivba.simbanyu.api.features.bill.model.Bill
 import com.avivba.simbanyu.api.features.bill.model.BillItem
 import com.avivba.simbanyu.api.features.bill.model.BillStatus
@@ -67,7 +68,8 @@ class Seed(
     private val paymentService: PaymentService,
     private val notificationRepository: NotificationRepository,
     private val encoder: PasswordEncoder,
-    private val entityManager: EntityManager
+    private val entityManager: EntityManager,
+    private val billService: BillService
 ) : CommandLineRunner {
 
     @Transactional
@@ -107,8 +109,7 @@ class Seed(
         planRepository.saveAll(plansData)
 
         val pricesData = readCsv("seeds/prices.csv") {
-            val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull()
-                ?: throw Exception("Plan not found")
+            val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull() ?: throw Exception("Plan not found")
 
             Price(
                 name = it["name"],
@@ -125,11 +126,9 @@ class Seed(
             val coordinateValue = it["coordinate"]
             val coordinate = getCoordinate(coordinateValue)
 
-            val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull()
-                ?: throw Exception("Plan not found")
+            val plan = planRepository.findPlanByName(it["plan"]!!).firstOrNull() ?: throw Exception("Plan not found")
 
-            val phone = if (!it["phone"].startsWith("0"))
-                "0${it["phone"]}" else it["phone"]
+            val phone = if (!it["phone"].startsWith("0")) "0${it["phone"]}" else it["phone"]
 
             val password = it["password"]!!
 
@@ -151,8 +150,7 @@ class Seed(
         subscribersData.forEach {
             println("Adding subscriber: ${it.name}")
             subscriberService.addSubscriber(
-                it,
-                seederUser.username
+                it, seederUser.username
             )
         }
 
@@ -170,9 +168,7 @@ class Seed(
                 val originDate = LocalDate.of(2023, 1, 1).atTime(10, 5)
                 var previousLocalDate = originDate
 
-                val previousDate = previousLocalDate
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
+                val previousDate = previousLocalDate.atZone(ZoneId.systemDefault()).toInstant()
 
                 usageRepository.updateTimestamps(previousUsage.id!!, previousDate)
                 previousUsage.createdAt = previousDate
@@ -190,7 +186,7 @@ class Seed(
                         meterStart = previousUsage.meterEnd,
                         meterEnd = previousUsage.meterEnd + currentUsageAmount,
                         evidenceImage = createDemoUpload(),
-                        operatorNotes = "",
+                        operatorNotes = "Baik",
                         subscriber = subscriber,
                         createdAt = date,
                         updatedAt = date
@@ -218,19 +214,16 @@ class Seed(
                     bill.createdAt = date
                     bill.updatedAt = date
 
+                    val plan = subscriber.plan
 
                     // BillItem (Batched)
                     val billItemsToSave = mapOf(
-                        "Biaya tetap" to 5000.0,
-                        "Biaya penggunaan (${usageAmount}m³)" to usageAmount * 2000.0,
+                        "Biaya tetap" to plan.basePrice,
+                        "Biaya penggunaan (${usageAmount}m³)" to billService.calculateTieredCost(plan, usageAmount),
                         "Biaya admin" to 1000.0,
                     ).map { (name, amount) ->
                         BillItem(
-                            name = name,
-                            amount = amount,
-                            bill = bill,
-                            createdAt = date,
-                            updatedAt = date
+                            name = name, amount = amount, bill = bill, createdAt = date, updatedAt = date
                         )
                     }
                     val savedBillItems = billItemRepository.saveAll(billItemsToSave)
@@ -262,9 +255,9 @@ class Seed(
 
                 if (secondsBetween > 0) {
                     val notificationsToSave = (1..15).map { j ->
-                        val randomDate = minDate.plusSeconds(Random.nextLong(0, secondsBetween))
-                            .atZone(ZoneId.systemDefault())
-                            .toInstant()
+                        val randomDate =
+                            minDate.plusSeconds(Random.nextLong(0, secondsBetween)).atZone(ZoneId.systemDefault())
+                                .toInstant()
 
                         Notification(
                             title = "Notification $j",
@@ -316,8 +309,7 @@ class Seed(
                 setIgnoreSurroundingSpaces(true)
                 setHeader()
                 setSkipHeaderRecord(true)
-            }.get().parse(file.inputStream().reader())
-                .mapNotNull(map)
+            }.get().parse(file.inputStream().reader()).mapNotNull(map)
         } else {
             throw Exception("File $path not found")
         }
