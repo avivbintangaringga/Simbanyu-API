@@ -163,7 +163,7 @@ class Seed(
                 val usageSpecs = UsageSpecs.filterBy(subscriber.id.toString(), includeInitial = true)
                 var previousUsage = usageRepository.findAll(usageSpecs).first()
 
-                val originDate = LocalDate.of(2023, 1, 1).atTime(10, 5)
+                val originDate = LocalDate.of(2023, 1, 10).atTime(10, 5)
                 var previousLocalDate = originDate
 
                 val previousDate = previousLocalDate.atZone(ZoneId.systemDefault()).toInstant()
